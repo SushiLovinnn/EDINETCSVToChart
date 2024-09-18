@@ -166,3 +166,6 @@ cython_debug/
 
 # json file
 *.json
+
+# test file
+test.py
