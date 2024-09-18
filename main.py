@@ -1,5 +1,6 @@
 import pandas as pd
 import json
+from plot import Plot
 
 class CSVToJSONConverter:
     def __init__(self, file_path):
@@ -71,15 +72,15 @@ class CSVToJSONConverter:
             print(f"JSONファイル保存エラー: {e}")
             exit()
 
+def main():
+    file_path = input("CSV file path: ")
+    converter = CSVToJSONConverter(file_path)
+    converter.load_csv()
+    converter.process_data()
+    converter.create_json_data()
+    converter.save_to_json()
+    chart = Plot(converter.json_file_path)
+    chart.plot()
 
-file_path = input("CSV file path: ")
-converter = CSVToJSONConverter(file_path)
-converter.load_csv()
-converter.process_data()
-converter.create_json_data()
-converter.save_to_json()
-
-from plot import Plot
-
-chart = Plot(converter.json_file_path)
-chart.plot()
+if __name__ == "__main__":
+    main()
