@@ -4,10 +4,9 @@ import matplotlib_fontja
 import matplotlib.ticker as ticker
 
 
-# y軸の単位を十億円に変更するフォーマッター
+
 def billions(y, pos):
     return f'{y * 1e-9:,.0f}億円'
-
 
 # JSONファイルを読み込む.
 with open('json_file/トヨタ自動車株式会社2024-03-31.json', 'r', encoding='utf-8') as json_file:
@@ -16,13 +15,13 @@ with open('json_file/トヨタ自動車株式会社2024-03-31.json', 'r', encodi
 # FigureとAxesオブジェクトを作成.
 fig, ax = plt.subplots(figsize=(9, 7))
 
-# y軸にフォーマッターを適用
+# y軸にフォーマッターを適用.
 ax.yaxis.set_major_formatter(ticker.FuncFormatter(billions))
 
-# グラフのタイトルを設定
+# グラフのタイトルを設定.
 ax.set_title(f'{data['CompanyName'][1]} 決算締日: {data['EndDate'][1]}', fontsize=16, loc='center')
 
-# 色の指定
+# 色の指定.
 colors = {
     'Assets': '#1f77b4',
     'NonCurrentAssets': '#468cb3',
@@ -38,22 +37,22 @@ colors = {
     'NetIncome': '#f63ad6'
 }
 
-# 貸借対照表(借方)の棒グラフ
+# 貸借対照表(借方)の棒グラフ.
 bar_Assets = ax.bar(1, data['Assets'][1], width=1, color=colors['Assets'])[0]
 bar_NonCurrentAssets = ax.bar(1.25, data['NonCurrentAssets'][1], width=0.5, color=colors['NonCurrentAssets'])[0]
 bar_CurrentAssets = ax.bar(1.25, data['CurrentAssets'][1], bottom=data['NonCurrentAssets'][1], width=0.5, color=colors['CurrentAssets'])[0]
 
-# 貸借対照表(貸方)の棒グラフ
+# 貸借対照表(貸方)の棒グラフ.
 bar_NetAssets = ax.bar(2, data['NetAssets'][1], width=1, color=colors['NetAssets'])[0]
 bar_Liabilities = ax.bar(2, data['Liabilities'][1], bottom=data['NetAssets'][1], width=1, color=colors['Liabilities'])[0]
 bar_NonCurrentLiabilities = ax.bar(1.75, data['NonCurrentLiabilities'][1], bottom=data['NetAssets'][1], width=0.5, color=colors['NonCurrentLiabilities'])[0]
 bar_CurrentLiabilities = ax.bar(1.75, data['CurrentLiabilities'][1], bottom=data['NonCurrentLiabilities'][1]+data['NetAssets'][1], width=0.5, color=colors['CurrentLiabilities'])[0]
 
-# 有利子負債の棒グラフ
+# 有利子負債の棒グラフ.
 bar_InterestbearingNonCurrentLiabilities = ax.bar(2.75, data['Interest-bearingNonCurrentLiabilities'][1], bottom=bar_CurrentLiabilities.get_y()-data['Interest-bearingNonCurrentLiabilities'][1], width=0.5, color=colors['Interest-bearingNonCurrentLiabilities'])[0]
 bar_InterestbearingCurrentLiabilities = ax.bar(2.75, data['Interest-bearingCurrentLiabilities'][1], bottom=bar_CurrentLiabilities.get_y(), width=0.5, color=colors['Interest-bearingCurrentLiabilities'])[0]
 
-# 損益計算書の棒グラフ
+# 損益計算書の棒グラフ.
 bar_Sales = ax.bar(4, data['Sales'][1], width=1, color=colors['Sales'])[0]
 bar_OperatingProfits = ax.bar(3.75, data['OperatingProfits'][1], width=0.5, color=colors['OperatingProfits'])[0]
 bar_NetIncome = ax.bar(4.25, data['NetIncome'][1], width=0.5, color=colors['NetIncome'])[0]
