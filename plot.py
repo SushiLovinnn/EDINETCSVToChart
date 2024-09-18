@@ -36,7 +36,7 @@ class Plot():
         ax.set_title(f'{data['CompanyName'][1]} 決算締日: {data['EndDate'][1]}', fontsize=16, loc='center')
 
         # 色の指定.
-        colors = {
+        colors: dict = {
             'Assets': '#1f77b4',
             'NonCurrentAssets': '#468cb3',
             'CurrentAssets': '#aec7e8',
@@ -127,11 +127,9 @@ class Plot():
 
         # y軸のグリッドラインを追加
         ax.yaxis.grid(True, linestyle='--', color='gray', alpha=0.7)
-
-
-        # グラフを表示.
-        plt.show()
-
         # データの出力.
         for key, val in data.items():
             print(f'{val[0]}: {val[1]} key: {key}')
+
+        # グラフを表示.
+        plt.show()

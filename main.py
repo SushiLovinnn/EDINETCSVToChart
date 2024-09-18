@@ -38,7 +38,7 @@ def update_id_expression_dict(row):
             ID_expression_dict[key][1] = int(row['値'])
         except ValueError:
             ID_expression_dict[key][1] = row['値']
-        ID_expression_dict[key][2] = row['単位']
+        ID_expression_dict[key][2] = row['単位'] if row['単位'] != 'ー' else ''
 
 # `apply`で全行を処理
 df.apply(update_id_expression_dict, axis=1)
