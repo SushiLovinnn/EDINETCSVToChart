@@ -1,10 +1,11 @@
 import pandas as pd
 import json
-import plot
 
 
 # CSVファイルを読み込む
-file_path = "/Users/fukamiayumionore/Desktop/CSV_to_Chart/XBRL_TO_CSV/jpcrp030000-asr-001_E02144-000_2024-03-31_01_2024-06-25.csv"
+print("CSV file path:")
+file_path = input()
+
 try:
     df = pd.read_csv(file_path, encoding='utf-16le', delimiter='\t')
 except Exception as e:
@@ -78,4 +79,8 @@ except Exception as e:
     print(f"JSONファイル保存エラー: {e}")
     exit()
 
-plot()
+from plot import Plot
+
+
+chart = Plot(json_file_path)
+chart.plot()
