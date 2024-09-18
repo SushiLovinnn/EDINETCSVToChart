@@ -4,7 +4,7 @@ import matplotlib_fontja
 import matplotlib.ticker as ticker
 
 
-
+# y軸の単位を十億円に変更するフォーマッター.
 def billions(y, pos):
     return f'{y * 1e-9:,.0f}億円'
 
