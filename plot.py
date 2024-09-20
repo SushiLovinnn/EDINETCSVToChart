@@ -6,9 +6,6 @@ import matplotlib.ticker as ticker
 
 
 class Plot():
-    """
-    test
-    """
 
     def __init__(self, json_file_path: str) -> None:
         self.json_file_path = json_file_path
@@ -22,18 +19,18 @@ class Plot():
 
         # y軸の単位を十億円に変更するフォーマッター.
         def billions(y, pos):
-            return f'{y * 1e-9:,.0f}億円'
+            return f'{y * 1e-8:,.0f}億円'
         
         # JSONファイルを読み込む.
         with open(self.json_file_path, 'r', encoding='utf-8') as json_file:
             data = json.load(json_file)
-        # FigureとAxesオブジェクトを作成.
+        # figとaxオブジェクトを作成.
         fig, ax = plt.subplots(figsize=(9, 7))
         # y軸にフォーマッターを適用.
         ax.yaxis.set_major_formatter(ticker.FuncFormatter(billions))
         
         # グラフのタイトルを設定.
-        ax.set_title(f'{data['CompanyName'][1]} 決算締日: {data['EndDate'][1]}', fontsize=16, loc='center')
+        ax.set_title(f"{data['CompanyName'][1]} 決算締日: {data['EndDate'][1]}", fontsize=16, loc='center')
 
         # 色の指定.
         colors: dict = {
@@ -127,9 +124,6 @@ class Plot():
 
         # y軸のグリッドラインを追加
         ax.yaxis.grid(True, linestyle='--', color='gray', alpha=0.7)
-        # データの出力.
-        for key, val in data.items():
-            print(f'{val[0]}: {val[1]} key: {key}')
 
         # グラフを表示.
         plt.show()

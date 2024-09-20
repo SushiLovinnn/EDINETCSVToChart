@@ -35,16 +35,17 @@ class CSVToJSONConverter:
             exit()
 
     def process_data(self):
-        def update_id_expression_dict(row):
+        for i in range(len(self.df)):
+            row = self.df.iloc[i]
             key = (row['要素ID'], row['コンテキストID'])
             if key in self.ID_expression_dict:
                 try:
                     self.ID_expression_dict[key][1] = int(row['値'])
                 except ValueError:
                     self.ID_expression_dict[key][1] = row['値']
-                self.ID_expression_dict[key][2] = row['単位'] if row['単位'] != 'ー' else ''
 
-        self.df.apply(update_id_expression_dict, axis=1)
+                self.ID_expression_dict[key][2] = row['単位'] if row['単位'] != '－' else ''
+
 
     def create_json_data(self):
         self.data = {
