@@ -1,5 +1,6 @@
-import pandas as pd
+import os
 import json
+import pandas as pd
 from plot import Plot
 
 
@@ -67,6 +68,11 @@ class CSVToJSONConverter:
 
     def save_to_json(self):
         self.json_file_path = f'json_file/{self.data["CompanyName"][1]}{self.data["EndDate"][1]}.json'
+        # ディレクトリが存在しなければ作成
+        json_dir = os.path.dirname(self.json_file_path)
+        if not os.path.exists(json_dir):
+            os.makedirs(json_dir)
+            
         try:
             with open(self.json_file_path, 'w', encoding='utf-8') as json_file:
                 json.dump(self.data, json_file, ensure_ascii=False, indent=4)
