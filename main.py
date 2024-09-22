@@ -10,7 +10,7 @@ class CSVToJSONConverter:
         self.file_path = file_path
         self.ID_expression_dict = {
             ('jpcrp_cor:CompanyNameCoverPage', 'FilingDateInstant'): ['会社名', -1, '単位'],
-            ('jpcrp030000-asr_E02144-000:OperatingRevenuesIFRSKeyFinancialData', 'CurrentYearDuration'): ['売上高(IFRS)', -1, '単位'],
+            ('jpcrp030000-asr_E02144-000:OperatingRevenuesIFRSKeyFinancialData', 'CurrentYearDuration'): ['売上収益(IFRS)', -1, '単位'],
             ('jpigp_cor:OperatingProfitLossIFRS', 'CurrentYearDuration'): ['営業利益(IFRS)', -1, '単位'],
             ('jpcrp_cor:ProfitLossAttributableToOwnersOfParentIFRSSummaryOfBusinessResults', 'CurrentYearDuration'): ['当期純利益(IFRS)', -1, '単位'],
             ('jpigp_cor:AssetsIFRS', 'CurrentYearInstant'): ['資産(IFRS)', -1, '単位'],
