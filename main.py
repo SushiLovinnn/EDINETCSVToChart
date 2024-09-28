@@ -8,24 +8,99 @@ from plot import Plot
 class CSVToJSONConverter:
     def __init__(self, file_path):
         self.file_path = file_path
+        self.data = {
+            'CompanyName': ['会社名', -1, '単位'],
+            'Sales': ['売上収益(IFRS)', -1, '単位'],
+            'OperatingProfits': ['営業利益(IFRS)', -1, '単位'],
+            'NetIncome': ['当期純利益(IFRS)', -1, '単位'],
+            'Assets': ['資産(IFRS)', -1, '単位'],
+            'Liabilities': ['負債(IFRS)', -1, '単位'],
+            'CurrentAssets': ['流動資産(IFRS)', -1, '単位'],
+            'NonCurrentAssets': ['固定資産(IFRS)', -1, '単位'],
+            'EndDate': ['当会計期間終了日', -1, '単位'],
+            'NetAssets': ['資本(IFRS)', -1, '単位'],
+            'CurrentLiabilities': ['流動負債(IFRS)', -1, '単位'],
+            'NonCurrentLiabilities': ['固定負債(IFRS)', -1, '単位'],
+            'Interest-bearingCurrentLiabilities': ['有利子流動負債(IFRS)', -1, '単位'],
+            'Interest-bearingNonCurrentLiabilities': ['有利子固定負債(IFRS)', -1, '単位']
+        }
+        self.CompanyName_IDs = (
+            ('jpcrp_cor:CompanyNameCoverPage', 'FilingDateInstant'),
+        )
+        self.IFRSSales_IDs = (
+            ('jpcrp030000-asr_E02144-000:OperatingRevenuesIFRSKeyFinancialData', 'CurrentYearDuration'),
+            ('jpcrp_cor:RevenueIFRSSummaryOfBusinessResults', 'CurrentYearDuration')
+        )
+        self.IFRSOperatingProfits_IDs = (
+            ('jpigp_cor:OperatingProfitLossIFRS', 'CurrentYearDuration'),
+        )
+        self.IFRSNetIncome_IDs = (
+            ('jpcrp_cor:ProfitLossAttributableToOwnersOfParentIFRSSummaryOfBusinessResults', 'CurrentYearDuration'),
+        )
+        self.IFRSAssets_IDs = (
+            ('jpigp_cor:AssetsIFRS', 'CurrentYearInstant'),
+        )
+        self.IFRSLiabilities_IDs = (
+            ('jpigp_cor:LiabilitiesIFRS', 'CurrentYearInstant'),
+        )
+        self.IFRSCurrentAssets_IDs = (
+            ('jpigp_cor:CurrentAssetsIFRS', 'CurrentYearInstant'),
+        )
+        self.IFRSNonCurrentAssets_IDs = (
+            ('jpigp_cor:NonCurrentAssetsIFRS', 'CurrentYearInstant'),
+        )
+        self.EndDate_IDs = (
+            ('jpdei_cor:CurrentPeriodEndDateDEI', 'FilingDateInstant'),
+        )
+        self.IFRSNetAssets_IDs = (
+            ('jpigp_cor:EquityIFRS', 'CurrentYearInstant'),
+        )
+        self.IFRSCurrentLiabilities_IDs = (
+            ('jpigp_cor:TotalCurrentLiabilitiesIFRS', 'CurrentYearInstant'),
+        )
+        self.IFRSNonCurrentLiabilities_IDs = (
+            ('jpigp_cor:NonCurrentLabilitiesIFRS', 'CurrentYearInstant'),
+        )
+        self.IFRSInterestBearingCurrentLiabilities_IDs = (
+            ('jpigp_cor:InterestBearingLiabilitiesCLIFRS', 'CurrentYearInstant'),
+        )
+        self.IFRSInterestBearingNonCurrentLiabilities_IDs = (
+            ('jpigp_cor:InterestBearingLiabilitiesNCLIFRS', 'CurrentYearInstant'),
+        )
+        self.tuple_of_IDs = (
+            self.CompanyName_IDs,
+            self.IFRSSales_IDs,
+            self.IFRSOperatingProfits_IDs,
+            self.IFRSOperatingProfits_IDs,
+            self.IFRSNetIncome_IDs,
+            self.IFRSAssets_IDs,
+            self.IFRSLiabilities_IDs,
+            self.IFRSCurrentAssets_IDs,
+            self.IFRSNonCurrentAssets_IDs,
+            self.EndDate_IDs,
+            self.IFRSNetAssets_IDs,
+            self.IFRSCurrentLiabilities_IDs,
+            self.IFRSNonCurrentLiabilities_IDs,
+            self.IFRSInterestBearingCurrentLiabilities_IDs,
+            self.IFRSInterestBearingNonCurrentLiabilities_IDs
+            )
         self.ID_expression_dict = {
-            ('jpcrp_cor:CompanyNameCoverPage', 'FilingDateInstant'): ['会社名', -1, '単位'],
-            ('jpcrp030000-asr_E02144-000:OperatingRevenuesIFRSKeyFinancialData', 'CurrentYearDuration'): ['売上収益(IFRS)', -1, '単位'],
-            ('jpigp_cor:OperatingProfitLossIFRS', 'CurrentYearDuration'): ['営業利益(IFRS)', -1, '単位'],
-            ('jpcrp_cor:ProfitLossAttributableToOwnersOfParentIFRSSummaryOfBusinessResults', 'CurrentYearDuration'): ['当期純利益(IFRS)', -1, '単位'],
-            ('jpigp_cor:AssetsIFRS', 'CurrentYearInstant'): ['資産(IFRS)', -1, '単位'],
-            ('jpigp_cor:LiabilitiesIFRS', 'CurrentYearInstant'): ['負債(IFRS)', -1, '単位'],
-            ('jpigp_cor:CurrentAssetsIFRS', 'CurrentYearInstant'): ['流動資産(IFRS)', -1, '単位'],
-            ('jpigp_cor:NonCurrentAssetsIFRS', 'CurrentYearInstant'): ['固定資産(IFRS)', -1, '単位'],
-            ('jpdei_cor:CurrentPeriodEndDateDEI', 'FilingDateInstant'): ['当会計期間終了日', -1, '単位'],
-            ('jpigp_cor:EquityIFRS', 'CurrentYearInstant'): ['資本(IFRS)', -1, '単位'],
-            ('jpigp_cor:TotalCurrentLiabilitiesIFRS', 'CurrentYearInstant'): ['流動負債(IFRS)', -1, '単位'],
-            ('jpigp_cor:NonCurrentLabilitiesIFRS', 'CurrentYearInstant'): ['固定負債(IFRS)', -1, '単位'],
-            ('jpigp_cor:InterestBearingLiabilitiesCLIFRS', 'CurrentYearInstant'): ['有利子流動負債(IFRS)', -1, '単位'],
-            ('jpigp_cor:InterestBearingLiabilitiesNCLIFRS', 'CurrentYearInstant'): ['有利子固定負債(IFRS)', -1, '単位']
+            self.CompanyName_IDs: 'CompanyName',
+            self.IFRSSales_IDs: 'Sales',
+            self.IFRSOperatingProfits_IDs: 'OperatingProfits',
+            self.IFRSNetIncome_IDs: 'NetIncome',
+            self.IFRSAssets_IDs: 'Assets',
+            self.IFRSLiabilities_IDs: 'Liabilities',
+            self.IFRSCurrentAssets_IDs: 'CurrentAssets',
+            self.IFRSNonCurrentAssets_IDs: 'NonCurrentAssets',
+            self.EndDate_IDs: 'EndDate',
+            self.IFRSNetAssets_IDs: 'NetAssets',
+            self.IFRSCurrentLiabilities_IDs: 'CurrentLiabilities',
+            self.IFRSNonCurrentLiabilities_IDs: 'NonCurrentLiabilities',
+            self.IFRSInterestBearingCurrentLiabilities_IDs: 'Interest-bearingCurrentLiabilities',
+            self.IFRSInterestBearingNonCurrentLiabilities_IDs: 'Interest-bearingNonCurrentLiabilities'
         }
         self.df = None
-        self.data = {}
         self.json_file_path = ''
 
     def load_csv(self):
@@ -39,32 +114,14 @@ class CSVToJSONConverter:
         for i in range(len(self.df)):
             row = self.df.iloc[i]
             key = (row['要素ID'], row['コンテキストID'])
-            if key in self.ID_expression_dict:
-                try:
-                    self.ID_expression_dict[key][1] = int(row['値'])
-                except ValueError:
-                    self.ID_expression_dict[key][1] = row['値']
+            for IDs in self.tuple_of_IDs:
+                if key in IDs:
+                    try:
+                        self.data[self.ID_expression_dict[IDs]][1] = int(row['値'])
+                    except ValueError:
+                        self.data[self.ID_expression_dict[IDs]][1] = row['値']
+                    self.data[self.ID_expression_dict[IDs]][2] = row['単位'] if row['単位'] != '－' else ''
 
-                self.ID_expression_dict[key][2] = row['単位'] if row['単位'] != '－' else ''
-
-
-    def create_json_data(self):
-        self.data = {
-            'CompanyName': self.ID_expression_dict[('jpcrp_cor:CompanyNameCoverPage', 'FilingDateInstant')],
-            'Sales': self.ID_expression_dict[('jpcrp030000-asr_E02144-000:OperatingRevenuesIFRSKeyFinancialData', 'CurrentYearDuration')],
-            'OperatingProfits': self.ID_expression_dict[('jpigp_cor:OperatingProfitLossIFRS', 'CurrentYearDuration')],
-            'NetIncome': self.ID_expression_dict[('jpcrp_cor:ProfitLossAttributableToOwnersOfParentIFRSSummaryOfBusinessResults', 'CurrentYearDuration')],
-            'Assets': self.ID_expression_dict[('jpigp_cor:AssetsIFRS', 'CurrentYearInstant')],
-            'Liabilities': self.ID_expression_dict[('jpigp_cor:LiabilitiesIFRS', 'CurrentYearInstant')],
-            'CurrentAssets': self.ID_expression_dict[('jpigp_cor:CurrentAssetsIFRS', 'CurrentYearInstant')],
-            'NonCurrentAssets': self.ID_expression_dict[('jpigp_cor:NonCurrentAssetsIFRS', 'CurrentYearInstant')],
-            'EndDate': self.ID_expression_dict[('jpdei_cor:CurrentPeriodEndDateDEI', 'FilingDateInstant')],
-            'NetAssets': self.ID_expression_dict[('jpigp_cor:EquityIFRS', 'CurrentYearInstant')],
-            'CurrentLiabilities': self.ID_expression_dict[('jpigp_cor:TotalCurrentLiabilitiesIFRS', 'CurrentYearInstant')],
-            'NonCurrentLiabilities': self.ID_expression_dict[('jpigp_cor:NonCurrentLabilitiesIFRS', 'CurrentYearInstant')],
-            'Interest-bearingCurrentLiabilities': self.ID_expression_dict[('jpigp_cor:InterestBearingLiabilitiesCLIFRS', 'CurrentYearInstant')],
-            'Interest-bearingNonCurrentLiabilities': self.ID_expression_dict[('jpigp_cor:InterestBearingLiabilitiesNCLIFRS', 'CurrentYearInstant')]
-        }
 
     def save_to_json(self):
         self.json_file_path = f'json_file/{self.data["CompanyName"][1]}{self.data["EndDate"][1]}.json'
@@ -86,7 +143,6 @@ def main():
     converter = CSVToJSONConverter(file_path)
     converter.load_csv()
     converter.process_data()
-    converter.create_json_data()
     converter.save_to_json()
     chart = Plot(converter.json_file_path)
     chart.plot()
