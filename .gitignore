@@ -169,3 +169,6 @@ cython_debug/
 
 # test file
 test.py
+
+# zip file
+*.zip
