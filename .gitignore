@@ -171,4 +171,4 @@ cython_debug/
 test.py
 
 # zip file
-*.zip
+*.zip.DS_Store
