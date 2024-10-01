@@ -52,7 +52,7 @@ class Plot():
 
         def missing_checker(data: list) -> bool:
             if data[1] == -1:
-                print(f'{data[0]}がありません。')
+                print(f'{data[0]}が検出できませんでした。')
                 return True
             else:
                 return False
