@@ -10,7 +10,6 @@ class Plot():
     def __init__(self, json_file_path: str) -> None:
         self.json_file_path = json_file_path
         
-        
     def plot(self) -> None:
         """
         jsonファイルの読み込みからグラフの作成まで行う関数

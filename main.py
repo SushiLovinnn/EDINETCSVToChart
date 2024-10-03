@@ -6,6 +6,7 @@ from plot import Plot
 
 
 class CSVToJSONConverter:
+
     def __init__(self, file_path):
         self.file_path = file_path
         self.data = {
@@ -122,7 +123,6 @@ class CSVToJSONConverter:
                         self.data[self.ID_expression_dict[IDs]][1] = row['値']
                     self.data[self.ID_expression_dict[IDs]][2] = row['単位'] if row['単位'] != '－' else ''
 
-
     def save_to_json(self):
         self.json_file_path = f'json_file/{self.data["CompanyName"][1]}{self.data["EndDate"][1]}.json'
         # ディレクトリが存在しなければ作成
@@ -138,6 +138,7 @@ class CSVToJSONConverter:
             print(f"JSONファイル保存エラー: {e}")
             exit()
 
+
 def main():
     file_path = input("CSV file path: ")
     converter = CSVToJSONConverter(file_path)
@@ -146,6 +147,7 @@ def main():
     converter.save_to_json()
     chart = Plot(converter.json_file_path)
     chart.plot()
+
 
 if __name__ == "__main__":
     main()
