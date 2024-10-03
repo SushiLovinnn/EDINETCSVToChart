@@ -138,14 +138,57 @@ class CSVToJSONConverter:
             print(f"JSONファイル保存エラー: {e}")
             exit()
 
+
+def find_csv_files_in_folder(folder_path: str) -> list[str]:
+    """
+    ファイル内のに存在する全てのCSVファイルの絶対パスをリストで返す関数
+    """
+    
+    # フォルダ内のCSVファイルのパスを格納するリスト
+    csv_files = []
+    # フォルダ内のすべてのファイルとディレクトリをチェック
+    for file_name in os.listdir(folder_path):
+        # フルパスを取得
+        file_path = os.path.join(folder_path, file_name)
+        # ファイルがCSVファイルであるかを確認
+        if os.path.isfile(file_path) and file_name.endswith('.csv'):
+            csv_files.append(file_path)
+    
+    return csv_files
+
+
+def check_missing_data(converter: CSVToJSONConverter, is_missing_data: dict) -> None:
+    """
+    見つからなかった値がGAAP指標かNon-GAAP指標か確認して報告する関数
+    返り値はない
+    """
+    GAAP = ("Sales", "NetIncome", "Assets", "Liabilities",
+            "CurrentAssets", "NonCurrentAssets", 
+            "NetAssets", "CurrentLiabilities",
+            "NonCurrentLiabilities")
+    #NonGAAP = ("OperatingProfits", "Interest-bearingCurrentLiabilities",
+    #           "Interest-bearingNonCurrentLiabilities")
+    for key, is_missing in is_missing_data.items():
+        if is_missing:
+            if key in GAAP:
+                print(f'GAAP指標である{converter.data[key]}が見つかりませんでした。')
+            else:
+                print(f'Non-GAAP指標である{converter.data[key]}が見つかりませんでした。')
+
+
 def main():
-    file_path = input("CSV file path: ")
-    converter = CSVToJSONConverter(file_path)
-    converter.load_csv()
-    converter.process_data()
-    converter.save_to_json()
-    chart = Plot(converter.json_file_path)
-    chart.plot()
+    folder_path = input("CSV folder path: ")
+    paths = find_csv_files_in_folder(folder_path)
+    if paths == []:
+        print('CSVファイルが見つかりませんでした。')
+    for file_path in paths:
+        converter = CSVToJSONConverter(file_path)
+        converter.load_csv()
+        converter.process_data()
+        converter.save_to_json()
+        chart = Plot(converter.json_file_path)
+        chart.plot()
+        check_missing_data(converter, chart.is_missing_data)
 
 if __name__ == "__main__":
     main()
