@@ -171,9 +171,9 @@ def check_missing_data(converter: CSVToJSONConverter, is_missing_data: dict) -> 
     for key, is_missing in is_missing_data.items():
         if is_missing:
             if key in GAAP:
-                print(f'GAAP指標である{converter.data[key]}が見つかりませんでした。')
+                print(f'GAAP指標である{converter.data[key][0]}が見つかりませんでした。')
             else:
-                print(f'Non-GAAP指標である{converter.data[key]}が見つかりませんでした。')
+                print(f'Non-GAAP指標である{converter.data[key][0]}が見つかりませんでした。')
 
 
 def main():
@@ -185,10 +185,12 @@ def main():
         converter = CSVToJSONConverter(file_path)
         converter.load_csv()
         converter.process_data()
+        print(f'-----{converter.data["CompanyName"][1]}-----')
         converter.save_to_json()
         chart = Plot(converter.json_file_path)
         chart.plot()
         check_missing_data(converter, chart.is_missing_data)
+        print("---------------")
 
 if __name__ == "__main__":
     main()
