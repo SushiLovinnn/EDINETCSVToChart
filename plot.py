@@ -7,9 +7,10 @@ import matplotlib.ticker as ticker
 
 class Plot():
 
-    def __init__(self, json_file_path: str) -> None:
+    def __init__(self, json_file_path: str, show_chart: bool) -> None:
         self.json_file_path = json_file_path
         self.is_missing_data = {}
+        self.show_chart = show_chart
         
         
     def plot(self) -> None:
@@ -57,6 +58,9 @@ class Plot():
         for key, value in data.items():
             self.is_missing_data[key] = missing_checker(value)
         
+        if self.show_chart == False:
+            return
+
         # 貸借対照表(借方)の棒グラフ.
         if self.is_missing_data['Assets'] == False:
             bar_Assets = ax.bar(1, data['Assets'][1], width=1, color=colors['Assets'])[0]

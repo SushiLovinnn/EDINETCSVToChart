@@ -8,6 +8,7 @@ from plot import Plot
 class CSVToJSONConverter:
     def __init__(self, file_path):
         self.file_path = file_path
+        self.missing_GAAP = False
         self.data = {
             'CompanyName': ['会社名', -1, '単位'],
             'Sales': ['売上収益(IFRS)', -1, '単位'],
@@ -148,7 +149,7 @@ def find_csv_files_in_folder(folder_path: str) -> list[str]:
     csv_files = []
     # フォルダ内のすべてのファイルとディレクトリをチェック
     for file_name in os.listdir(folder_path):
-        # フルパスを取得
+        # 絶対パスを取得
         file_path = os.path.join(folder_path, file_name)
         # ファイルがCSVファイルであるかを確認
         if os.path.isfile(file_path) and file_name.endswith('.csv'):
@@ -166,31 +167,41 @@ def check_missing_data(converter: CSVToJSONConverter, is_missing_data: dict) -> 
             "CurrentAssets", "NonCurrentAssets", 
             "NetAssets", "CurrentLiabilities",
             "NonCurrentLiabilities")
-    #NonGAAP = ("OperatingProfits", "Interest-bearingCurrentLiabilities",
+    # NonGAAP = ("OperatingProfits", "Interest-bearingCurrentLiabilities",
     #           "Interest-bearingNonCurrentLiabilities")
     for key, is_missing in is_missing_data.items():
         if is_missing:
             if key in GAAP:
-                print(f'GAAP指標である{converter.data[key][0]}が見つかりませんでした。')
+                converter.missing_GAAP = True
+                print(f'**GAAP指標である{converter.data[key][0]}が見つかりませんでした。**')
             else:
                 print(f'Non-GAAP指標である{converter.data[key][0]}が見つかりませんでした。')
 
 
 def main():
+    with open('config.json', 'r') as config_file:
+        config = json.load(config_file)
     folder_path = input("CSV folder path: ")
     paths = find_csv_files_in_folder(folder_path)
     if paths == []:
         print('CSVファイルが見つかりませんでした。')
+    missing_GAAP = []
     for file_path in paths:
         converter = CSVToJSONConverter(file_path)
         converter.load_csv()
         converter.process_data()
         print(f'-----{converter.data["CompanyName"][1]}-----')
         converter.save_to_json()
-        chart = Plot(converter.json_file_path)
+        chart = Plot(converter.json_file_path, config["show_chart"])
         chart.plot()
         check_missing_data(converter, chart.is_missing_data)
-        print("---------------")
+        print("---------------" + '-'*2*len(converter.data["CompanyName"][1]))
+        if converter.missing_GAAP:
+            missing_GAAP.append(converter.data['CompanyName'][1])
+    if missing_GAAP != []:
+        print('以下の会社からGAAP指標を抜き出すことに失敗しました。')
+        for name in missing_GAAP:
+            print(name)
 
 if __name__ == "__main__":
     main()
