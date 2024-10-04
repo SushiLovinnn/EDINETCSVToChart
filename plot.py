@@ -31,16 +31,17 @@ class Barchart():
             data = json.load(json_file)
         return data
 
+
     def plot(self) -> None:
         """
         jsonファイルの読み込みからグラフの作成まで行う関数
         """
-
-        # y軸の単位を十億円に変更するフォーマッター.
+        
         def billions(y, pos):
+            """
+            y軸の単位を十億円に変更するフォーマッター.
+            """
             return f'{y * 1e-8:,.0f}億円'
-        
-        
         
         # figとaxオブジェクトを作成.
         fig, ax = plt.subplots(figsize=(9, 7))

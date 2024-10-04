@@ -194,7 +194,7 @@ def main():
         chart = Barchart(converter.json_file_path, config["show_chart"])
         chart.plot()
         check_missing_data(converter, chart.is_missing_data)
-        print("---------------" + '-'*2*len(converter.data["CompanyName"][1]))
+        print("---------------" + '-'*int(1.5*len(converter.data["CompanyName"][1])))
         if converter.missing_GAAP:
             missing_GAAP.append(converter.data['CompanyName'][1])
     if missing_GAAP != []:
