@@ -6,6 +6,7 @@ from plot import Barchart
 
 
 class CSVToJSONConverter:
+
     def __init__(self, file_path):
         self.file_path = file_path
         self.missing_GAAP = False
@@ -201,6 +202,7 @@ def main():
         print('以下の会社からGAAP指標を抜き出すことに失敗しました。')
         for name in missing_GAAP:
             print(name)
+
 
 
 if __name__ == "__main__":
