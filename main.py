@@ -1,7 +1,7 @@
 import os
 import json
 import pandas as pd
-from plot import Plot
+from plot import Barchart
 
 
 
@@ -123,7 +123,6 @@ class CSVToJSONConverter:
                         self.data[self.ID_expression_dict[IDs]][1] = row['値']
                     self.data[self.ID_expression_dict[IDs]][2] = row['単位'] if row['単位'] != '－' else ''
 
-
     def save_to_json(self):
         self.json_file_path = f'json_file/{self.data["CompanyName"][1]}{self.data["EndDate"][1]}.json'
         # ディレクトリが存在しなければ作成
@@ -192,7 +191,7 @@ def main():
         converter.process_data()
         print(f'-----{converter.data["CompanyName"][1]}-----')
         converter.save_to_json()
-        chart = Plot(converter.json_file_path, config["show_chart"])
+        chart = Barchart(converter.json_file_path, config["show_chart"])
         chart.plot()
         check_missing_data(converter, chart.is_missing_data)
         print("---------------" + '-'*2*len(converter.data["CompanyName"][1]))
@@ -202,6 +201,7 @@ def main():
         print('以下の会社からGAAP指標を抜き出すことに失敗しました。')
         for name in missing_GAAP:
             print(name)
+
 
 if __name__ == "__main__":
     main()
