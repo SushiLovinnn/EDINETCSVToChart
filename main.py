@@ -31,13 +31,15 @@ class CSVToJSONConverter:
         )
         self.IFRSSales_IDs = (
             ('jpcrp030000-asr_E02144-000:OperatingRevenuesIFRSKeyFinancialData', 'CurrentYearDuration'),
-            ('jpcrp_cor:RevenueIFRSSummaryOfBusinessResults', 'CurrentYearDuration')
+            ('jpcrp_cor:RevenueIFRSSummaryOfBusinessResults', 'CurrentYearDuration'),
+            ('jpcrp030000-asr_E01807-000:NetSalesIFRSSummaryOfBusinessResults', 'CurrentYearDuration')
         )
         self.IFRSOperatingProfits_IDs = (
             ('jpigp_cor:OperatingProfitLossIFRS', 'CurrentYearDuration'),
         )
         self.IFRSNetIncome_IDs = (
             ('jpcrp_cor:ProfitLossAttributableToOwnersOfParentIFRSSummaryOfBusinessResults', 'CurrentYearDuration'),
+            ('jpcrp_cor:ProfitLossIFRSSummaryOfBusinessResults', 'CurrentYearDuration')
         )
         self.IFRSAssets_IDs = (
             ('jpigp_cor:AssetsIFRS', 'CurrentYearInstant'),
