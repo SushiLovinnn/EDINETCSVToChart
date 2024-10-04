@@ -1,7 +1,7 @@
 import os
 import json
 import pandas as pd
-from plot import Plot
+from plot import Barchart
 
 
 
@@ -9,6 +9,7 @@ class CSVToJSONConverter:
 
     def __init__(self, file_path):
         self.file_path = file_path
+        self.missing_GAAP = False
         self.data = {
             'CompanyName': ['会社名', -1, '単位'],
             'Sales': ['売上収益(IFRS)', -1, '単位'],
@@ -139,14 +140,69 @@ class CSVToJSONConverter:
             exit()
 
 
+def find_csv_files_in_folder(folder_path: str) -> list[str]:
+    """
+    ファイル内のに存在する全てのCSVファイルの絶対パスをリストで返す関数
+    """
+    
+    # フォルダ内のCSVファイルのパスを格納するリスト
+    csv_files = []
+    # フォルダ内のすべてのファイルとディレクトリをチェック
+    for file_name in os.listdir(folder_path):
+        # 絶対パスを取得
+        file_path = os.path.join(folder_path, file_name)
+        # ファイルがCSVファイルであるかを確認
+        if os.path.isfile(file_path) and file_name.endswith('.csv'):
+            csv_files.append(file_path)
+    
+    return csv_files
+
+
+def check_missing_data(converter: CSVToJSONConverter, is_missing_data: dict) -> None:
+    """
+    見つからなかった値がGAAP指標かNon-GAAP指標か確認して報告する関数
+    返り値はない
+    """
+    GAAP = ("Sales", "NetIncome", "Assets", "Liabilities",
+            "CurrentAssets", "NonCurrentAssets", 
+            "NetAssets", "CurrentLiabilities",
+            "NonCurrentLiabilities")
+    # NonGAAP = ("OperatingProfits", "Interest-bearingCurrentLiabilities",
+    #           "Interest-bearingNonCurrentLiabilities")
+    for key, is_missing in is_missing_data.items():
+        if is_missing:
+            if key in GAAP:
+                converter.missing_GAAP = True
+                print(f'**GAAP指標である{converter.data[key][0]}が見つかりませんでした。**')
+            else:
+                print(f'Non-GAAP指標である{converter.data[key][0]}が見つかりませんでした。')
+
+
 def main():
-    file_path = input("CSV file path: ")
-    converter = CSVToJSONConverter(file_path)
-    converter.load_csv()
-    converter.process_data()
-    converter.save_to_json()
-    chart = Plot(converter.json_file_path)
-    chart.plot()
+    with open('config.json', 'r') as config_file:
+        config = json.load(config_file)
+    folder_path = input("CSV folder path: ")
+    paths = find_csv_files_in_folder(folder_path)
+    if paths == []:
+        print('CSVファイルが見つかりませんでした。')
+    missing_GAAP = []
+    for file_path in paths:
+        converter = CSVToJSONConverter(file_path)
+        converter.load_csv()
+        converter.process_data()
+        print(f'-----{converter.data["CompanyName"][1]}-----')
+        converter.save_to_json()
+        chart = Barchart(converter.json_file_path, config["show_chart"])
+        chart.plot()
+        check_missing_data(converter, chart.is_missing_data)
+        print("---------------" + '-'*int(1.5*len(converter.data["CompanyName"][1])))
+        if converter.missing_GAAP:
+            missing_GAAP.append(converter.data['CompanyName'][1])
+    if missing_GAAP != []:
+        print('以下の会社からGAAP指標を抜き出すことに失敗しました。')
+        for name in missing_GAAP:
+            print(name)
+
 
 
 if __name__ == "__main__":

@@ -164,8 +164,8 @@ cython_debug/
 # CSV File
 *.csv
 
-# json file
-*.json
+# json_fileディレクトリ内の全てのファイルを無視
+json_file/*
 
 # test file
 test.py
