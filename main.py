@@ -1,5 +1,6 @@
 import os
 import zipfile
+import shutil
 import json
 import pandas as pd
 from plot import Barchart
@@ -184,16 +185,13 @@ def check_missing_data(converter: CSVToJSONConverter, is_missing_data: dict) -> 
                 print(f'Non-GAAP指標である{converter.data[key][0]}が見つかりませんでした。')
 
 
-import zipfile
-import os
-
 def extract_target_csv(zip_folder_path, extract_to) -> None:
     """
     ZIPファイルから目的のCSVファイルを抽出し、抽出後にZIPファイルを削除します。
     
     Parameters
     ----------
-    zip_foler_path: str
+    zip_folder_path: str
         抽出するZIPファイルが格納されているディレクトリのパス
     extract_to: str
         抽出先ディレクトリのパス
@@ -231,14 +229,20 @@ def extract_target_csv(zip_folder_path, extract_to) -> None:
             # 目的のCSVファイルのみをフィルタリング
             target_csv_file = ''
             for f in all_files:
-                if f.startswith('jpcrp030000'):
+                if f.startswith('XBRL_TO_CSV/jpcrp030000') and f.endswith('.csv'):
                     target_csv_file = f
             
             if target_csv_file == '':
                 print(f"ZIPファイル内に目的のCSVファイルが存在しません: {zip_path}")
                 continue
             else:
-                zip_ref.extract(target_csv_file, extract_to)
+                # 抽出されたCSVファイルを指定のディレクトリに保存
+                with zip_ref.open(target_csv_file) as source_file:
+                    # 保存するファイル名はパス部分を削除したもの
+                    output_file_path = os.path.join(extract_to, os.path.basename(target_csv_file))
+                    with open(output_file_path, 'wb') as output_file:
+                        shutil.copyfileobj(source_file, output_file)
+                
                 print(f"{target_csv_file} を {extract_to} に抽出しました。")
         
         # ZIPファイルを削除
