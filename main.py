@@ -1,4 +1,5 @@
 import os
+import zipfile
 import json
 import pandas as pd
 from plot import Barchart
@@ -126,7 +127,10 @@ class CSVToJSONConverter:
                         self.data[self.ID_expression_dict[IDs]][1] = row['値']
                     self.data[self.ID_expression_dict[IDs]][2] = row['単位'] if row['単位'] != '－' else ''
 
-    def save_to_json(self):
+    def save_to_json(self) -> None:
+        """
+        dataをjsonファイルにして保存する関数
+        """
         self.json_file_path = f'json_file/{self.data["CompanyName"][1]}{self.data["EndDate"][1]}.json'
         # ディレクトリが存在しなければ作成
         json_dir = os.path.dirname(self.json_file_path)
@@ -178,6 +182,50 @@ def check_missing_data(converter: CSVToJSONConverter, is_missing_data: dict) -> 
                 print(f'**GAAP指標である{converter.data[key][0]}が見つかりませんでした。**')
             else:
                 print(f'Non-GAAP指標である{converter.data[key][0]}が見つかりませんでした。')
+
+
+def extract_specific_csv(zip_path, extract_to, target_csv_name=None):
+    """
+    ZIPファイルからCSVファイルを抽出します。
+    
+    :param zip_path: ZIPファイルのパス
+    :param extract_to: 抽出先のディレクトリ
+    :param target_csv_name: 抽出したいCSVファイル名（指定しない場合はすべてのCSVを抽出）
+    """
+    # ZIPファイルが存在するか確認
+    if not os.path.exists(zip_path):
+        print(f"指定されたZIPファイルが存在しません: {zip_path}")
+        return
+    
+    # 抽出先ディレクトリが存在しない場合は作成
+    if not os.path.isdir(extract_to):
+        os.makedirs(extract_to, exist_ok=True)
+        print(f"抽出先ディレクトリを作成しました: {extract_to}")
+    
+    # ZIPファイルを開く
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        # ZIP内のファイルリストを取得
+        all_files = zip_ref.namelist()
+        
+        # CSVファイルのみをフィルタリング
+        csv_files = [f for f in all_files if f.endswith('.csv')]
+        
+        if not csv_files:
+            print("ZIPファイル内にCSVファイルが存在しません。")
+            return
+        
+        if target_csv_name:
+            # 指定されたCSVが存在するか確認
+            if target_csv_name in csv_files:
+                zip_ref.extract(target_csv_name, extract_to)
+                print(f"{target_csv_name} を {extract_to} に抽出しました。")
+            else:
+                print(f"{target_csv_name} はZIPファイル内に存在しません。")
+        else:
+            # すべてのCSVを抽出
+            zip_ref.extractall(extract_to, members=csv_files)
+            print(f"すべてのCSVファイルを {extract_to} に抽出しました。")
+
 
 
 def main():

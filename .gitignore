@@ -170,8 +170,8 @@ json_file/*
 # test file
 test.py
 
-# zip file
-*.zip
+# ZIPsディレクトリ内のzipファイル
+ZIPs/*
 
 
 .DS_Store
