@@ -184,61 +184,85 @@ def check_missing_data(converter: CSVToJSONConverter, is_missing_data: dict) -> 
                 print(f'Non-GAAP指標である{converter.data[key][0]}が見つかりませんでした。')
 
 
-def extract_target_csv(zip_path, extract_to, target_csv_name=None):
+import zipfile
+import os
+
+def extract_target_csv(zip_folder_path, extract_to) -> None:
     """
-    ZIPファイルから目的のCSVファイルを抽出する
+    ZIPファイルから目的のCSVファイルを抽出し、抽出後にZIPファイルを削除します。
     
     Parameters
     ----------
+    zip_foler_path: str
+        抽出するZIPファイルが格納されているディレクトリのパス
+    extract_to: str
+        抽出先ディレクトリのパス
 
-    :param extract_to: 抽出先のディレクトリ
-    :param target_csv_name: 抽出したいCSVファイル名（指定しない場合はすべてのCSVを抽出）
+    Returns
+    -------
+    None
     """
-    # ZIPファイルが存在するか確認
-    if not os.path.exists(zip_path):
-        print(f"指定されたZIPファイルが存在しません: {zip_path}")
-        return
+    zip_files = []
     
-    # 抽出先ディレクトリが存在しない場合は作成
-    if not os.path.isdir(extract_to):
-        os.makedirs(extract_to, exist_ok=True)
-        print(f"抽出先ディレクトリを作成しました: {extract_to}")
+    # フォルダ内のすべてのファイルとディレクトリをチェック
+    for file_name in os.listdir(zip_folder_path):
+        # 絶対パスを取得
+        file_path = os.path.join(zip_folder_path, file_name)
+        # ファイルがZIPファイルであるかを確認
+        if os.path.isfile(file_path) and file_name.endswith('.zip'):
+            zip_files.append(file_path)
     
-    # ZIPファイルを開く
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        # ZIP内のファイルリストを取得
-        all_files = zip_ref.namelist()
+    for zip_path in zip_files:
+        # ZIPファイルが存在するか確認
+        if not os.path.exists(zip_path):
+            print(f"指定されたZIPファイルが存在しません: {zip_path}")
+            continue
         
-        # CSVファイルのみをフィルタリング
-        csv_files = [f for f in all_files if f.endswith('.csv')]
+        # 抽出先ディレクトリが存在しない場合は作成
+        if not os.path.isdir(extract_to):
+            os.makedirs(extract_to, exist_ok=True)
+            print(f"抽出先ディレクトリを作成しました: {extract_to}")
         
-        if not csv_files:
-            print("ZIPファイル内にCSVファイルが存在しません。")
-            return
-        
-        if target_csv_name:
-            # 指定されたCSVが存在するか確認
-            if target_csv_name in csv_files:
-                zip_ref.extract(target_csv_name, extract_to)
-                print(f"{target_csv_name} を {extract_to} に抽出しました。")
+        # ZIPファイルを開く
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            # ZIP内のファイルリストを取得
+            all_files = zip_ref.namelist()
+            
+            # 目的のCSVファイルのみをフィルタリング
+            target_csv_file = ''
+            for f in all_files:
+                if f.startswith('jpcrp030000'):
+                    target_csv_file = f
+            
+            if target_csv_file == '':
+                print(f"ZIPファイル内に目的のCSVファイルが存在しません: {zip_path}")
+                continue
             else:
-                print(f"{target_csv_name} はZIPファイル内に存在しません。")
-        else:
-            # すべてのCSVを抽出
-            zip_ref.extractall(extract_to, members=csv_files)
-            print(f"すべてのCSVファイルを {extract_to} に抽出しました。")
+                zip_ref.extract(target_csv_file, extract_to)
+                print(f"{target_csv_file} を {extract_to} に抽出しました。")
+        
+        # ZIPファイルを削除
+        try:
+            os.remove(zip_path)
+            print(f"ZIPファイルを削除しました: {zip_path}")
+        except Exception as e:
+            print(f"ZIPファイルの削除に失敗しました: {zip_path} - {e}")
+
+
 
 
 
 def main():
     with open('config.json', 'r') as config_file:
         config = json.load(config_file)
-    extract_target_csv()
     folder_path = input("CSV folder path: ")
+    extract_target_csv('ZIPs', folder_path)
     paths = find_csv_files_in_folder(folder_path)
+
     if paths == []:
         print('CSVファイルが見つかりませんでした。')
     missing_GAAP = []
+    
     for file_path in paths:
         converter = CSVToJSONConverter(file_path)
         converter.load_csv()
