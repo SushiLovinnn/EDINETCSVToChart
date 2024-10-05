@@ -184,11 +184,13 @@ def check_missing_data(converter: CSVToJSONConverter, is_missing_data: dict) -> 
                 print(f'Non-GAAP指標である{converter.data[key][0]}が見つかりませんでした。')
 
 
-def extract_specific_csv(zip_path, extract_to, target_csv_name=None):
+def extract_target_csv(zip_path, extract_to, target_csv_name=None):
     """
-    ZIPファイルからCSVファイルを抽出します。
+    ZIPファイルから目的のCSVファイルを抽出する
     
-    :param zip_path: ZIPファイルのパス
+    Parameters
+    ----------
+
     :param extract_to: 抽出先のディレクトリ
     :param target_csv_name: 抽出したいCSVファイル名（指定しない場合はすべてのCSVを抽出）
     """
@@ -231,6 +233,7 @@ def extract_specific_csv(zip_path, extract_to, target_csv_name=None):
 def main():
     with open('config.json', 'r') as config_file:
         config = json.load(config_file)
+    extract_target_csv()
     folder_path = input("CSV folder path: ")
     paths = find_csv_files_in_folder(folder_path)
     if paths == []:
