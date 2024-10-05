@@ -249,9 +249,6 @@ def extract_target_csv(zip_folder_path, extract_to) -> None:
             print(f"ZIPファイルの削除に失敗しました: {zip_path} - {e}")
 
 
-
-
-
 def main():
     with open('config.json', 'r') as config_file:
         config = json.load(config_file)
@@ -262,7 +259,7 @@ def main():
     if paths == []:
         print('CSVファイルが見つかりませんでした。')
     missing_GAAP = []
-    
+
     for file_path in paths:
         converter = CSVToJSONConverter(file_path)
         converter.load_csv()
