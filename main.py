@@ -144,13 +144,38 @@ class CSVToJSONConverter:
             print(f"JSONファイルを保存しました: {self.json_file_path}")
         except Exception as e:
             print(f"JSONファイル保存エラー: {e}")
-            exit()
+
+        # CSVファイルの名前を変更
+        new_csv_file_path = f'CSVs/{self.data["CompanyName"][1]}{self.data["EndDate"][1]}.csv'
+        csv_dir = os.path.dirname(new_csv_file_path)
+        if not os.path.exists(csv_dir):
+            os.makedirs(csv_dir)
+        
+        try:
+            os.rename(self.file_path, new_csv_file_path)
+            print(f"CSVファイルの名前を変更しました: {new_csv_file_path}")
+        except Exception as e:
+            print(f"CSVファイルの名前変更エラー: {e}")
 
 
 def find_csv_files_in_folder(folder_path: str) -> list[str]:
     """
-    ファイル内のに存在する全てのCSVファイルの絶対パスをリストで返す関数
-    
+    指定されたフォルダ内に存在する全てのCSVファイルの絶対パスをリストで返す関数。
+
+    Parameters
+    ----------
+    folder_path : str
+        CSVファイルを検索するフォルダのパス。
+
+    Returns
+    -------
+    list of str
+        フォルダ内の全てのCSVファイルの絶対パスを含むリスト。
+
+    Notes
+    -----
+    この関数は、指定されたフォルダ内の全てのファイルとディレクトリをチェックし、
+    拡張子が`.csv`であるファイルの絶対パスをリストに追加する。
     """
     
     # フォルダ内のCSVファイルのパスを格納するリスト
@@ -201,7 +226,7 @@ def check_missing_data(converter: CSVToJSONConverter, is_missing_data: dict) -> 
                 print(f'Non-GAAP指標である{converter.data[key][0]}が見つかりませんでした。')
 
 
-def extract_target_csv(zip_folder_path, extract_to) -> None:
+def extract_target_csv(zip_folder_path: str, extract_to: str) -> None:
     """
     ZIPファイルから目的のCSVファイルを抽出し、抽出後にZIPファイルを削除します。
     
