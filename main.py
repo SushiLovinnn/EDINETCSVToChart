@@ -150,6 +150,7 @@ class CSVToJSONConverter:
 def find_csv_files_in_folder(folder_path: str) -> list[str]:
     """
     ファイル内のに存在する全てのCSVファイルの絶対パスをリストで返す関数
+    
     """
     
     # フォルダ内のCSVファイルのパスを格納するリスト
@@ -168,7 +169,22 @@ def find_csv_files_in_folder(folder_path: str) -> list[str]:
 def check_missing_data(converter: CSVToJSONConverter, is_missing_data: dict) -> None:
     """
     見つからなかった値がGAAP指標かNon-GAAP指標か確認して報告する関数
-    返り値はない
+
+    Parameters
+    ----------
+    converter : CSVToJSONConverter
+        CSVからJSONへの変換を行うオブジェクト。
+    is_missing_data : dict
+        データが欠落しているかどうかを示す辞書。keyはデータ項目名、値は欠落している場合はTrue、そうでない場合はFalse。
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    GAAP指標が欠落している場合、`converter.missing_GAAP`がTrueに設定され、GAAP指標の欠落が報告される。
+    Non-GAAP指標が欠落している場合、その旨が報告される。
     """
     GAAP = ("Sales", "NetIncome", "Assets", "Liabilities",
             "CurrentAssets", "NonCurrentAssets", 
