@@ -150,6 +150,7 @@ class CSVProcessor:
     def rename_csv_file(self) -> None:
         """
         CSVファイルの名前を変更する関数
+        {会社名}{決算締日}.csv として名前を変更する。
         """
         new_csv_file_path = f'CSVs/{self.data["CompanyName"][1]}{self.data["EndDate"][1]}.csv'
         csv_dir = os.path.dirname(new_csv_file_path)
