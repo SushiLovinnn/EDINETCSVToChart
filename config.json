@@ -1,4 +1,4 @@
 {
-    "show_chart": true,
-    "select_data": true
+    "show_chart": false,
+    "select_data": false
 }

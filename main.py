@@ -146,7 +146,10 @@ class CSVToJSONConverter:
         except Exception as e:
             print(f"JSONファイル保存エラー: {e}")
 
-        # CSVファイルの名前を変更
+    def rename_csv_file(self) -> None:
+        """
+        CSVファイルの名前を変更する関数
+        """
         new_csv_file_path = f'CSVs/{self.data["CompanyName"][1]}{self.data["EndDate"][1]}.csv'
         csv_dir = os.path.dirname(new_csv_file_path)
         if not os.path.exists(csv_dir):
@@ -315,6 +318,7 @@ def main():
         converter.process_data()
         print(f'-----{converter.data["CompanyName"][1]}-----')
         converter.save_to_json()
+        converter.rename_csv_file()
         chart = Barchart(converter.json_file_path, config["show_chart"])
         chart.plot()
         check_missing_data(converter, chart.is_missing_data)
