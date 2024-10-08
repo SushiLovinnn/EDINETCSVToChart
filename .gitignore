@@ -173,5 +173,10 @@ test.py
 # ZIPsディレクトリ内のzipファイルを無視
 ZIPs/*.zip
 
+# ZIPsディレクトリを無視
+ZIPs/
+
+# CSVsディレクトリを無視
+CSVs/
 
 .DS_Store
