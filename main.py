@@ -7,7 +7,8 @@ from plot import Barchart
 
 
 
-class CSVToJSONConverter:
+# クラス名を変更
+class CSVProcessor:
 
     def __init__(self, file_path):
         self.file_path = file_path
@@ -195,7 +196,7 @@ def find_csv_files_in_folder(folder_path: str) -> list[str]:
     return csv_files
 
 
-def check_missing_data(converter: CSVToJSONConverter, is_missing_data: dict) -> None:
+def check_missing_data(converter: CSVProcessor, is_missing_data: dict) -> None:
     """
     見つからなかった値がGAAP指標かNon-GAAP指標か確認して報告する関数
 
@@ -311,20 +312,20 @@ def main():
     if paths == []:
         print('CSVファイルが見つかりませんでした。')
     missing_GAAP = []
-
+    # クラスのインスタンス化部分を変更
     for file_path in paths:
-        converter = CSVToJSONConverter(file_path)
-        converter.load_csv()
-        converter.process_data()
-        print(f'-----{converter.data["CompanyName"][1]}-----')
-        converter.save_to_json()
-        converter.rename_csv_file()
-        chart = Barchart(converter.json_file_path, config["show_chart"])
+        processor = CSVProcessor(file_path)
+        processor.load_csv()
+        processor.process_data()
+        print(f'-----{processor.data["CompanyName"][1]}-----')
+        processor.save_to_json()
+        processor.rename_csv_file()
+        chart = Barchart(processor.json_file_path, config["show_chart"])
         chart.plot()
-        check_missing_data(converter, chart.is_missing_data)
-        print("---------------" + '-'*int(1.5*len(converter.data["CompanyName"][1])))
-        if converter.missing_GAAP:
-            missing_GAAP.append(converter.data['CompanyName'][1])
+        check_missing_data(processor, chart.is_missing_data)
+        print("---------------" + '-'*int(1.5*len(processor.data["CompanyName"][1])))
+        if processor.missing_GAAP:
+            missing_GAAP.append(processor.data['CompanyName'][1])
     if missing_GAAP != []:
         print('以下の会社からGAAP指標を抜き出すことに失敗しました。')
         for name in missing_GAAP:
