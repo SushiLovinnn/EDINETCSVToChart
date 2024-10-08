@@ -170,13 +170,12 @@ json_file/*.json
 # test file
 test.py
 
-# ZIPsディレクトリ内のzipファイルを無視
-ZIPs/*.zip
+# ZIPsディレクトリ内の全てのファイルを無視
+ZIPs/*
+!ZIPs/.gitkeep
 
-# ZIPsディレクトリを無視
-ZIPs/
-
-# CSVsディレクトリを無視
-CSVs/
+# CSVsディレクトリ内の全てのファイルを無視
+CSVs/*
+!CSVs/.gitkeep
 
 .DS_Store
