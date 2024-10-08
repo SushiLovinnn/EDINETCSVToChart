@@ -298,9 +298,12 @@ def extract_target_csv(zip_folder_path: str, extract_to: str) -> None:
 def main():
     with open('config.json', 'r') as config_file:
         config = json.load(config_file)
-    folder_path = input("CSV folder path: ")
-    extract_target_csv('ZIPs', folder_path)
-    paths = find_csv_files_in_folder(folder_path)
+    if config["select_data"] == True:
+        paths = [input("CSV file path: ")]
+    else:
+        folder_path = input("CSV folder path: ")
+        extract_target_csv('ZIPs', folder_path)
+        paths = find_csv_files_in_folder(folder_path)
 
     if paths == []:
         print('CSVファイルが見つかりませんでした。')
