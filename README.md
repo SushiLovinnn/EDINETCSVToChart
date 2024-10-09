@@ -18,7 +18,7 @@
 1. リポジトリをクローンします。
 
     ```sh
-    git clone <リポジトリのURL>
+    git clone https://github.com/SushiLovinnn/EDINETCSVToChart/
     cd <リポジトリのディレクトリ>
     ```
 
