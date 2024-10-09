@@ -1,4 +1,4 @@
-# CSV to JSON Processor
+# EDINETCSVToChart
 
 このプログラムは、EDINETで取得できる有価証券報告書のCSVファイルから必要なデータを抜き出してJSONファイルに変換し、<br>
 さらにそのデータを用いて棒グラフを生成するPythonプログラムです。
