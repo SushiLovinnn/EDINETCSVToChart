@@ -58,9 +58,14 @@ class CSVProcessor:
             'IFRSInterest-bearingNonCurrentLiabilities': ['有利子固定負債(IFRS)', -1, '単位', 1],
             'Interest-bearingNonCurrentLiabilities': ['有利子固定負債', -1, '単位', 0],
         }
+        ### 会社情報の要素IDとコンテキストID
         self.CompanyName_IDs = (
             ('jpcrp_cor:CompanyNameCoverPage', 'FilingDateInstant'),
         )
+        self.EndDate_IDs = (
+            ('jpdei_cor:CurrentPeriodEndDateDEI', 'FilingDateInstant'),
+        )
+        ### 損益計算書の要素IDとコンテキストID
         self.IFRSSales_IDs = (
             ('jpcrp030000-asr_E02144-000:OperatingRevenuesIFRSKeyFinancialData', 'CurrentYearDuration'),
             ('jpcrp_cor:RevenueIFRSSummaryOfBusinessResults', 'CurrentYearDuration'),
@@ -68,13 +73,13 @@ class CSVProcessor:
             ('jpcrp030000-asr_E01097-000:NetSalesIFRSSummaryOfBusinessResults', 'CurrentYearDuration'),
         )
         self.Sales_IDs = (
-
+            ('jpcrp_cor:OperatingRevenue1SummaryOfBusinessResults', 'CurrentYearDuration'),
         )
         self.IFRSOperatingProfits_IDs = (
             ('jpigp_cor:OperatingProfitLossIFRS', 'CurrentYearDuration'),
         )
         self.OperationProfits_IDs = (
-                
+            ('jppfs_cor:OperatingIncome', 'CurrentYearDuration'),
             )
         self.IFRSNetIncome_IDs = (
             ('jpcrp_cor:ProfitLossAttributableToOwnersOfParentIFRSSummaryOfBusinessResults', 'CurrentYearDuration'),
@@ -83,17 +88,14 @@ class CSVProcessor:
         self.Netincome_IDs = (
 
         )
+
+        ### 貸借対照表の要素IDとコンテキストID
+        ## 資産の部
         self.IFRSAssets_IDs = (
             ('jpigp_cor:AssetsIFRS', 'CurrentYearInstant'),
         )
         self.Assets_IDs = (
-
-        )
-        self.IFRSLiabilities_IDs = (
-            ('jpigp_cor:LiabilitiesIFRS', 'CurrentYearInstant'),
-        )
-        self.Liabilities_IDs = (
-
+            
         )
         self.IFRSCurrentAssets_IDs = (
             ('jpigp_cor:CurrentAssetsIFRS', 'CurrentYearInstant'),
@@ -107,13 +109,11 @@ class CSVProcessor:
         self.NonCurrentAssets_IDs = (
 
         )
-        self.EndDate_IDs = (
-            ('jpdei_cor:CurrentPeriodEndDateDEI', 'FilingDateInstant'),
+        ## 負債の部
+        self.IFRSLiabilities_IDs = (
+            ('jpigp_cor:LiabilitiesIFRS', 'CurrentYearInstant'),
         )
-        self.IFRSNetAssets_IDs = (
-            ('jpigp_cor:EquityIFRS', 'CurrentYearInstant'),
-        )
-        self.NetAssets_IDs = (
+        self.Liabilities_IDs = (
 
         )
         self.IFRSCurrentLiabilities_IDs = (
@@ -140,6 +140,15 @@ class CSVProcessor:
         self.IFRSInterestBearingNonCurrentLiabilities_IDs = (
             ('jpigp_cor:InterestBearingLiabilitiesNCLIFRS', 'CurrentYearInstant'),
         )
+        ## 純資産の部
+        self.IFRSNetAssets_IDs = (
+            ('jpigp_cor:EquityIFRS', 'CurrentYearInstant'),
+        )
+        self.NetAssets_IDs = (
+            ('jppfs_cor:NetAssets', 'CurrentYearDuration'),
+        )
+        
+        
         self.ID_expression_dict = {
             self.CompanyName_IDs: 'CompanyName',
             self.IFRSSales_IDs: 'IFRSSales',
@@ -283,7 +292,8 @@ def check_missing_data(converter: CSVProcessor, is_missing_data: dict, isIFRS: b
         CSVからJSONへの変換を行うオブジェクト。
     is_missing_data : dict
         データが欠落しているかどうかを示す辞書。keyはデータ項目名、値は欠落している場合はTrue、そうでない場合はFalse。
-
+    isIFRS : bool
+        与えられたデータがIFRS基準かどうかを示すフラグ。
     Returns
     -------
     None
@@ -308,12 +318,12 @@ def check_missing_data(converter: CSVProcessor, is_missing_data: dict, isIFRS: b
                 elif key in NonGAAP:
                     print(f'Non-GAAP指標である{converter.data[key][0]}が見つかりませんでした。')
     else:
-        main_measures = ("Sales", "NetIncome", "Assets", "Liabilities",
+        main_measures = ("Sales", "OperationProfits", "NetIncome", "Assets", "Liabilities",
                            "CurrentAssets", "NonCurrentAssets", 
                            "NetAssets", "CurrentLiabilities",
                            "NonCurrentLiabilities")
 
-        supplementary_measures = ("OperationProfits", "Interest-bearingCurrentLiabilities",
+        supplementary_measures = ("Interest-bearingCurrentLiabilities",
                                   "Interest-bearingNonCurrentLiabilities")
         for key, is_missing in is_missing_data.items():
             if is_missing:
@@ -427,6 +437,7 @@ def main():
     if paths == []:
         print('CSVファイルが見つかりませんでした。')
     missing_GAAP = []
+    missing_main_measure = []
     for file_path in paths:
         processor = CSVProcessor(file_path)
         processor.load_csv()
@@ -440,9 +451,16 @@ def main():
         print("---------------" + '-'*int(1.5*len(processor.data["CompanyName"][1])))
         if processor.missing_GAAP:
             missing_GAAP.append(processor.data['CompanyName'][1])
+        if processor.missing_main_measure:
+            missing_main_measure.append(processor.data['CompanyName'][1])
+
     if missing_GAAP != []:
         print('以下の会社からGAAP指標を抜き出すことに失敗しました。')
         for name in missing_GAAP:
+            print(name)
+    if missing_main_measure != []:
+        print('以下の会社から主要な指標を抜き出すことに失敗しました。')
+        for name in missing_main_measure:
             print(name)
 
 
