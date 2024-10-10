@@ -1,18 +1,16 @@
 # EDINETCSVToChart
 
-このプログラムは、EDINETで取得できる有価証券報告書のCSVファイルから必要なデータを抜き出してJSONファイルに変換し、<br>
-さらにそのデータを用いて棒グラフを生成するPythonプログラムです。<br>
-現時点ではIFRS適用済企業にしか対応していないので、注意してください。
+このプログラムは、EDINETで取得できる有価証券報告書のCSVファイルから必要なデータを抜き出してJSONファイルに変換し、さらにそのデータを用いて棒グラフを生成します。
 ## 構成
 
 - `main.py`: メインの処理を行うスクリプト。
-- `csv_downloader.py`: CSVファイルをダウンロードするスクリプト。
 - `plot.py`: 棒グラフを生成するためのスクリプト。
 - `config.json`: 設定ファイル。
-- `requirements.txt`: 必要なPythonパッケージを記載したファイル。
+- `requirements.txt`: 必要なパッケージを記載したファイル。
 - `.gitignore`: Gitで無視するファイルやディレクトリを記載したファイル。
 - `CSVs/`: 処理されたCSVファイルを格納するディレクトリ。
 - `ZIPs/`: ダウンロードされたZIPファイルを格納するディレクトリ。
+- `json_file/`: 生成されたJSONファイルを格納するディレクトリ。
 
 ## インストール
 
@@ -20,7 +18,7 @@
 
     ```sh
     git clone https://github.com/SushiLovinnn/EDINETCSVToChart/
-    cd <リポジトリのディレクトリ>
+    cd EDINETCSVToChart
     ```
 
 2. 必要なパッケージをインストールします。
@@ -40,8 +38,8 @@
     }
     ```
 
-    - `select_data`: `true`に設定すると、個別のCSVファイルを選択します。<br>`false`に設定すると、CSVs内の全てのCSVファイルを処理します。
-    - `show_chart`: `true`に設定すると、棒グラフを表示します。
+    - `select_data`: `true`に設定すると、個別のCSVファイルを選択します。`false`に設定すると、CSVs内の全てのCSVファイルを処理します。
+    - `show_chart`を`true`に設定すると、棒グラフを表示します。
 
 2. プログラムを実行します。
 
@@ -64,7 +62,7 @@
     - `plot()`: 棒グラフを生成します。
 
 - `extract_target_csv()`: ZIPファイルから目的のCSVファイルを抽出します。
-- `find_csv_files_in_folder()`: 指定されたフォルダ内の全てのCSVファイルを検索します。
+- `find_csv_files_in_folder()`: 指定されたフォルダ内の全てのCSVファイルを探します。
 - `check_missing_data()`: 取得できなかったデータを確認します。
 
 ## ライセンス
