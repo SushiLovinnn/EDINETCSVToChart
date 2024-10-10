@@ -15,19 +15,19 @@ class CSVProcessor:
         self.missing_GAAP = False
         self.data = {
             'CompanyName': ['会社名', -1, '単位'],
-            'Sales': ['売上収益(IFRS)', -1, '単位'],
-            'OperatingProfits': ['営業利益(IFRS)', -1, '単位'],
-            'NetIncome': ['当期純利益(IFRS)', -1, '単位'],
-            'Assets': ['資産(IFRS)', -1, '単位'],
-            'Liabilities': ['負債(IFRS)', -1, '単位'],
-            'CurrentAssets': ['流動資産(IFRS)', -1, '単位'],
-            'NonCurrentAssets': ['固定資産(IFRS)', -1, '単位'],
+            'IFRSSales': ['売上収益(IFRS)', -1, '単位'],
+            'IFRSOperatingProfits': ['営業利益(IFRS)', -1, '単位'],
+            'IFRSNetIncome': ['当期純利益(IFRS)', -1, '単位'],
+            'IFRSAssets': ['資産(IFRS)', -1, '単位'],
+            'IFRSLiabilities': ['負債(IFRS)', -1, '単位'],
+            'IFRSCurrentAssets': ['流動資産(IFRS)', -1, '単位'],
+            'IFRSNonCurrentAssets': ['固定資産(IFRS)', -1, '単位'],
             'EndDate': ['当会計期間終了日', -1, '単位'],
-            'NetAssets': ['資本(IFRS)', -1, '単位'],
-            'CurrentLiabilities': ['流動負債(IFRS)', -1, '単位'],
-            'NonCurrentLiabilities': ['固定負債(IFRS)', -1, '単位'],
-            'Interest-bearingCurrentLiabilities': ['有利子流動負債(IFRS)', -1, '単位'],
-            'Interest-bearingNonCurrentLiabilities': ['有利子固定負債(IFRS)', -1, '単位']
+            'IFRSNetAssets': ['資本(IFRS)', -1, '単位'],
+            'IFRSCurrentLiabilities': ['流動負債(IFRS)', -1, '単位'],
+            'IFRSNonCurrentLiabilities': ['固定負債(IFRS)', -1, '単位'],
+            'IFRSInterest-bearingCurrentLiabilities': ['有利子流動負債(IFRS)', -1, '単位'],
+            'IFRSInterest-bearingNonCurrentLiabilities': ['有利子固定負債(IFRS)', -1, '単位']
         }
         self.CompanyName_IDs = (
             ('jpcrp_cor:CompanyNameCoverPage', 'FilingDateInstant'),
@@ -38,24 +38,45 @@ class CSVProcessor:
             ('jpcrp030000-asr_E01807-000:NetSalesIFRSSummaryOfBusinessResults', 'CurrentYearDuration'),
             ('jpcrp030000-asr_E01097-000:NetSalesIFRSSummaryOfBusinessResults', 'CurrentYearDuration'),
         )
+        self.Sales_IDs = (
+
+        )
         self.IFRSOperatingProfits_IDs = (
             ('jpigp_cor:OperatingProfitLossIFRS', 'CurrentYearDuration'),
         )
+        self.OperationProfits_IDs = (
+                
+            )
         self.IFRSNetIncome_IDs = (
             ('jpcrp_cor:ProfitLossAttributableToOwnersOfParentIFRSSummaryOfBusinessResults', 'CurrentYearDuration'),
             ('jpcrp_cor:ProfitLossIFRSSummaryOfBusinessResults', 'CurrentYearDuration')
         )
+        self.Netincome_IDs = (
+
+        )
         self.IFRSAssets_IDs = (
             ('jpigp_cor:AssetsIFRS', 'CurrentYearInstant'),
+        )
+        self.Assets_IDs = (
+
         )
         self.IFRSLiabilities_IDs = (
             ('jpigp_cor:LiabilitiesIFRS', 'CurrentYearInstant'),
         )
+        self.Liabilities_IDs = (
+
+        )
         self.IFRSCurrentAssets_IDs = (
             ('jpigp_cor:CurrentAssetsIFRS', 'CurrentYearInstant'),
         )
+        self.CurrentAssets_IDs = (
+
+        )
         self.IFRSNonCurrentAssets_IDs = (
             ('jpigp_cor:NonCurrentAssetsIFRS', 'CurrentYearInstant'),
+        )
+        self.NonCurrentAssets_IDs = (
+
         )
         self.EndDate_IDs = (
             ('jpdei_cor:CurrentPeriodEndDateDEI', 'FilingDateInstant'),
@@ -63,35 +84,33 @@ class CSVProcessor:
         self.IFRSNetAssets_IDs = (
             ('jpigp_cor:EquityIFRS', 'CurrentYearInstant'),
         )
+        self.NetAssets_IDs = (
+
+        )
         self.IFRSCurrentLiabilities_IDs = (
             ('jpigp_cor:TotalCurrentLiabilitiesIFRS', 'CurrentYearInstant'),
+        )
+        self.CurrentLiabilities_IDs = (
+
         )
         self.IFRSNonCurrentLiabilities_IDs = (
             ('jpigp_cor:NonCurrentLabilitiesIFRS', 'CurrentYearInstant'),
         )
+        self.NonCurrentLiabilities_IDs = (
+
+        )
+        self.InterestBearingCurrentLiabilities_IDs  = (
+
+        )
         self.IFRSInterestBearingCurrentLiabilities_IDs = (
             ('jpigp_cor:InterestBearingLiabilitiesCLIFRS', 'CurrentYearInstant'),
+        )
+        self.InterestBearingNonCurrentLiabilities_IDs = (
+
         )
         self.IFRSInterestBearingNonCurrentLiabilities_IDs = (
             ('jpigp_cor:InterestBearingLiabilitiesNCLIFRS', 'CurrentYearInstant'),
         )
-        self.tuple_of_IDs = (
-            self.CompanyName_IDs,
-            self.IFRSSales_IDs,
-            self.IFRSOperatingProfits_IDs,
-            self.IFRSOperatingProfits_IDs,
-            self.IFRSNetIncome_IDs,
-            self.IFRSAssets_IDs,
-            self.IFRSLiabilities_IDs,
-            self.IFRSCurrentAssets_IDs,
-            self.IFRSNonCurrentAssets_IDs,
-            self.EndDate_IDs,
-            self.IFRSNetAssets_IDs,
-            self.IFRSCurrentLiabilities_IDs,
-            self.IFRSNonCurrentLiabilities_IDs,
-            self.IFRSInterestBearingCurrentLiabilities_IDs,
-            self.IFRSInterestBearingNonCurrentLiabilities_IDs
-            )
         self.ID_expression_dict = {
             self.CompanyName_IDs: 'CompanyName',
             self.IFRSSales_IDs: 'Sales',
@@ -119,10 +138,26 @@ class CSVProcessor:
             exit()
 
     def process_data(self):
+        """
+        データフレームの各行を処理し、条件に基づいてデータを更新します。
+
+        各行の要素IDとコンテキストIDの組み合わせをキーとして使用し、
+        `self.ID_expression_dict`内のIDタプルと一致する場合にデータを更新します。
+        値が整数に変換可能な場合は整数として、そうでない場合はそのままの値を使用します。
+        単位が'－'でない場合はその値を使用し、'－'の場合は空文字列を設定します。
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
         for i in range(len(self.df)):
             row = self.df.iloc[i]
             key = (row['要素ID'], row['コンテキストID'])
-            for IDs in self.tuple_of_IDs:
+            for IDs in self.ID_expression_dict.keys():
                 if key in IDs:
                     try:
                         self.data[self.ID_expression_dict[IDs]][1] = int(row['値'])
