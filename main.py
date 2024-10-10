@@ -35,7 +35,7 @@ class CSVProcessor:
             'IFRSSales': ['売上収益(IFRS)', -1, '単位', 1],
             'Sales': ['売上収益', -1, '単位', 0],
             'IFRSOperatingProfits': ['営業利益(IFRS)', -1, '単位', 1],
-            'OperationProfits': ['営業利益', -1, '単位', 0],
+            'OperatingProfits': ['営業利益', -1, '単位', 0],
             'IFRSNetIncome': ['当期純利益(IFRS)', -1, '単位', 1],
             'NetIncome': ['当期純利益', -1, '単位', 0],
             'IFRSAssets': ['資産(IFRS)', -1, '単位', 1],
@@ -78,7 +78,7 @@ class CSVProcessor:
         self.IFRSOperatingProfits_IDs = (
             ('jpigp_cor:OperatingProfitLossIFRS', 'CurrentYearDuration'),
         )
-        self.OperationProfits_IDs = (
+        self.OperatingProfits_IDs = (
             ('jppfs_cor:OperatingIncome', 'CurrentYearDuration'),
             )
         self.IFRSNetIncome_IDs = (
@@ -86,7 +86,7 @@ class CSVProcessor:
             ('jpcrp_cor:ProfitLossIFRSSummaryOfBusinessResults', 'CurrentYearDuration')
         )
         self.Netincome_IDs = (
-
+            ('jppfs_cor:ProfitLoss', 'CurrentYearDuration'),
         )
 
         ### 貸借対照表の要素IDとコンテキストID
@@ -95,38 +95,38 @@ class CSVProcessor:
             ('jpigp_cor:AssetsIFRS', 'CurrentYearInstant'),
         )
         self.Assets_IDs = (
-            
+            ('jppfs_cor:Assets', 'CurrentYearInstant'),
         )
         self.IFRSCurrentAssets_IDs = (
             ('jpigp_cor:CurrentAssetsIFRS', 'CurrentYearInstant'),
         )
         self.CurrentAssets_IDs = (
-
+            ('jppfs_cor:CurrentAssets', 'CurrentYearInstant'),
         )
         self.IFRSNonCurrentAssets_IDs = (
             ('jpigp_cor:NonCurrentAssetsIFRS', 'CurrentYearInstant'),
         )
         self.NonCurrentAssets_IDs = (
-
+            ('jppfs_cor:NoncurrentAssets', 'CurrentYearInstant'),
         )
         ## 負債の部
         self.IFRSLiabilities_IDs = (
             ('jpigp_cor:LiabilitiesIFRS', 'CurrentYearInstant'),
         )
         self.Liabilities_IDs = (
-
+            ('jppfs_cor:Liabilities', 'CurrentYearInstant'),
         )
         self.IFRSCurrentLiabilities_IDs = (
             ('jpigp_cor:TotalCurrentLiabilitiesIFRS', 'CurrentYearInstant'),
         )
         self.CurrentLiabilities_IDs = (
-
+            ('jppfs_cor:CurrentLiabilities', 'CurrentYearInstant'),
         )
         self.IFRSNonCurrentLiabilities_IDs = (
             ('jpigp_cor:NonCurrentLabilitiesIFRS', 'CurrentYearInstant'),
         )
         self.NonCurrentLiabilities_IDs = (
-
+            ('jppfs_cor:NoncurrentLiabilities', 'CurrentYearInstant'),
         )
         self.InterestBearingCurrentLiabilities_IDs  = (
 
@@ -145,7 +145,7 @@ class CSVProcessor:
             ('jpigp_cor:EquityIFRS', 'CurrentYearInstant'),
         )
         self.NetAssets_IDs = (
-            ('jppfs_cor:NetAssets', 'CurrentYearDuration'),
+            ('jppfs_cor:NetAssets', 'CurrentYearInstant'),
         )
         
         
@@ -154,7 +154,7 @@ class CSVProcessor:
             self.IFRSSales_IDs: 'IFRSSales',
             self.Sales_IDs: 'Sales',
             self.IFRSOperatingProfits_IDs: 'IFRSOperatingProfits',
-            self.OperationProfits_IDs: 'OperationProfits',
+            self.OperatingProfits_IDs: 'OperatingProfits',
             self.IFRSNetIncome_IDs: 'IFRSNetIncome',
             self.Netincome_IDs: 'NetIncome',
             self.IFRSAssets_IDs: 'IFRSAssets',
@@ -318,7 +318,7 @@ def check_missing_data(converter: CSVProcessor, is_missing_data: dict, isIFRS: b
                 elif key in NonGAAP:
                     print(f'Non-GAAP指標である{converter.data[key][0]}が見つかりませんでした。')
     else:
-        main_measures = ("Sales", "OperationProfits", "NetIncome", "Assets", "Liabilities",
+        main_measures = ("Sales", "OperatingProfits", "NetIncome", "Assets", "Liabilities",
                            "CurrentAssets", "NonCurrentAssets", 
                            "NetAssets", "CurrentLiabilities",
                            "NonCurrentLiabilities")
@@ -427,12 +427,12 @@ def isIFRS(data: dict) -> bool:
 def main():
     with open('config.json', 'r') as config_file:
         config = json.load(config_file)
+    folder_path = 'CSVs'
+    extract_target_csv('ZIPs', folder_path)
+    paths = find_csv_files_in_folder(folder_path)
     if config["select_data"] == True:
         paths = [input("CSV file path: ")]
-    else:
-        folder_path = 'CSVs'
-        extract_target_csv('ZIPs', folder_path)
-        paths = find_csv_files_in_folder(folder_path)
+        
 
     if paths == []:
         print('CSVファイルが見つかりませんでした。')
