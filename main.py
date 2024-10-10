@@ -5,29 +5,58 @@ import json
 import pandas as pd
 from plot import Barchart
 
-
-
-# クラス名を変更
 class CSVProcessor:
+    """
+    CSVファイルを処理してデータを抽出し、JSON形式で保存するクラス。
+
+    Attributes
+    ----------
+    file_path : str
+        処理するCSVファイルのパス。
+    missing_GAAP : bool
+        GAAP勘定科目が欠落しているかどうかを示すフラグ。
+    missing_main_measure : bool
+        主要な勘定科目が欠落しているかどうかを示すフラグ。
+    data : dict
+        データ項目の辞書。各キーはデータ項目名であり、値はリストです。
+        リストの各要素は以下の通りです:
+        - データ項目名 (str)
+        - データ (int/float)
+        - 単位 (str)
+        - IFRS限定要素なら1、共通要素なら0、国内基準限定要素なら-1 (int)
+    """
 
     def __init__(self, file_path):
         self.file_path = file_path
         self.missing_GAAP = False
+        self.missing_main_measure = False
         self.data = {
-            'CompanyName': ['会社名', -1, '単位'],
-            'IFRSSales': ['売上収益(IFRS)', -1, '単位'],
-            'IFRSOperatingProfits': ['営業利益(IFRS)', -1, '単位'],
-            'IFRSNetIncome': ['当期純利益(IFRS)', -1, '単位'],
-            'IFRSAssets': ['資産(IFRS)', -1, '単位'],
-            'IFRSLiabilities': ['負債(IFRS)', -1, '単位'],
-            'IFRSCurrentAssets': ['流動資産(IFRS)', -1, '単位'],
-            'IFRSNonCurrentAssets': ['固定資産(IFRS)', -1, '単位'],
-            'EndDate': ['当会計期間終了日', -1, '単位'],
-            'IFRSNetAssets': ['資本(IFRS)', -1, '単位'],
-            'IFRSCurrentLiabilities': ['流動負債(IFRS)', -1, '単位'],
-            'IFRSNonCurrentLiabilities': ['固定負債(IFRS)', -1, '単位'],
-            'IFRSInterest-bearingCurrentLiabilities': ['有利子流動負債(IFRS)', -1, '単位'],
-            'IFRSInterest-bearingNonCurrentLiabilities': ['有利子固定負債(IFRS)', -1, '単位']
+            'CompanyName': ['会社名', -1, '単位', 0],
+            'IFRSSales': ['売上収益(IFRS)', -1, '単位', 1],
+            'Sales': ['売上収益', -1, '単位', 0],
+            'IFRSOperatingProfits': ['営業利益(IFRS)', -1, '単位', 1],
+            'OperationProfits': ['営業利益', -1, '単位', 0],
+            'IFRSNetIncome': ['当期純利益(IFRS)', -1, '単位', 1],
+            'NetIncome': ['当期純利益', -1, '単位', 0],
+            'IFRSAssets': ['資産(IFRS)', -1, '単位', 1],
+            'Assets': ['資産', -1, '単位', 0],
+            'IFRSLiabilities': ['負債(IFRS)', -1, '単位', 1],
+            'Liabilities': ['負債', -1, '単位', 0],
+            'IFRSCurrentAssets': ['流動資産(IFRS)', -1, '単位', 1],
+            'CurrentAssets': ['流動資産', -1, '単位', 0],
+            'IFRSNonCurrentAssets': ['固定資産(IFRS)', -1, '単位', 1],
+            'NonCurrentAssets': ['固定資産', -1, '単位', 0],
+            'EndDate': ['当会計期間終了日', -1, '単位', 0],
+            'IFRSNetAssets': ['資本(IFRS)', -1, '単位', 1],
+            'NetAssets': ['純資産', -1, '単位', 0],
+            'IFRSCurrentLiabilities': ['流動負債(IFRS)', -1, '単位', 1],
+            'CurrentLiabilities': ['流動負債', -1, '単位', 0],
+            'IFRSNonCurrentLiabilities': ['固定負債(IFRS)', -1, '単位', 1],
+            'NonCurrentLiabilities': ['固定負債', -1, '単位', 0],
+            'IFRSInterest-bearingCurrentLiabilities': ['有利子流動負債(IFRS)', -1, '単位', 1],
+            'Interest-bearingCurrentLiabilities': ['有利子流動負債', -1, '単位', 0],
+            'IFRSInterest-bearingNonCurrentLiabilities': ['有利子固定負債(IFRS)', -1, '単位', 1],
+            'Interest-bearingNonCurrentLiabilities': ['有利子固定負債', -1, '単位', 0],
         }
         self.CompanyName_IDs = (
             ('jpcrp_cor:CompanyNameCoverPage', 'FilingDateInstant'),
@@ -113,19 +142,31 @@ class CSVProcessor:
         )
         self.ID_expression_dict = {
             self.CompanyName_IDs: 'CompanyName',
-            self.IFRSSales_IDs: 'Sales',
-            self.IFRSOperatingProfits_IDs: 'OperatingProfits',
-            self.IFRSNetIncome_IDs: 'NetIncome',
-            self.IFRSAssets_IDs: 'Assets',
-            self.IFRSLiabilities_IDs: 'Liabilities',
-            self.IFRSCurrentAssets_IDs: 'CurrentAssets',
-            self.IFRSNonCurrentAssets_IDs: 'NonCurrentAssets',
+            self.IFRSSales_IDs: 'IFRSSales',
+            self.Sales_IDs: 'Sales',
+            self.IFRSOperatingProfits_IDs: 'IFRSOperatingProfits',
+            self.OperationProfits_IDs: 'OperationProfits',
+            self.IFRSNetIncome_IDs: 'IFRSNetIncome',
+            self.Netincome_IDs: 'NetIncome',
+            self.IFRSAssets_IDs: 'IFRSAssets',
+            self.Assets_IDs: 'Assets',
+            self.IFRSLiabilities_IDs: 'IFRSLiabilities',
+            self.Liabilities_IDs: 'Liabilities',
+            self.IFRSCurrentAssets_IDs: 'IFRSCurrentAssets',
+            self.CurrentAssets_IDs: 'CurrentAssets',
+            self.IFRSNonCurrentAssets_IDs: 'IFRSNonCurrentAssets',
+            self.NonCurrentAssets_IDs: 'NonCurrentAssets',
             self.EndDate_IDs: 'EndDate',
-            self.IFRSNetAssets_IDs: 'NetAssets',
-            self.IFRSCurrentLiabilities_IDs: 'CurrentLiabilities',
-            self.IFRSNonCurrentLiabilities_IDs: 'NonCurrentLiabilities',
-            self.IFRSInterestBearingCurrentLiabilities_IDs: 'Interest-bearingCurrentLiabilities',
-            self.IFRSInterestBearingNonCurrentLiabilities_IDs: 'Interest-bearingNonCurrentLiabilities'
+            self.IFRSNetAssets_IDs: 'IFRSNetAssets',
+            self.NetAssets_IDs: 'NetAssets',
+            self.IFRSCurrentLiabilities_IDs: 'IFRSCurrentLiabilities',
+            self.CurrentLiabilities_IDs: 'CurrentLiabilities',
+            self.IFRSNonCurrentLiabilities_IDs: 'IFRSNonCurrentLiabilities',
+            self.NonCurrentLiabilities_IDs: 'NonCurrentLiabilities',
+            self.IFRSInterestBearingCurrentLiabilities_IDs: 'IFRSInterest-bearingCurrentLiabilities',
+            self.InterestBearingCurrentLiabilities_IDs: 'Interest-bearingCurrentLiabilities',
+            self.IFRSInterestBearingNonCurrentLiabilities_IDs: 'IFRSInterest-bearingNonCurrentLiabilities',
+            self.InterestBearingNonCurrentLiabilities_IDs: 'Interest-bearingNonCurrentLiabilities',
         }
         self.df = None
         self.json_file_path = ''
@@ -232,7 +273,7 @@ def find_csv_files_in_folder(folder_path: str) -> list[str]:
     return csv_files
 
 
-def check_missing_data(converter: CSVProcessor, is_missing_data: dict) -> None:
+def check_missing_data(converter: CSVProcessor, is_missing_data: dict, isIFRS: bool) -> None:
     """
     見つからなかった値がGAAP指標かNon-GAAP指標か確認して報告する関数
 
@@ -252,20 +293,35 @@ def check_missing_data(converter: CSVProcessor, is_missing_data: dict) -> None:
     GAAP指標が欠落している場合、`converter.missing_GAAP`がTrueに設定され、GAAP指標の欠落が報告される。
     Non-GAAP指標が欠落している場合、その旨が報告される。
     """
-    GAAP = ("Sales", "NetIncome", "Assets", "Liabilities",
-            "CurrentAssets", "NonCurrentAssets", 
-            "NetAssets", "CurrentLiabilities",
-            "NonCurrentLiabilities")
-    # NonGAAP = ("OperatingProfits", "Interest-bearingCurrentLiabilities",
-    #           "Interest-bearingNonCurrentLiabilities")
-    for key, is_missing in is_missing_data.items():
-        if is_missing:
-            if key in GAAP:
-                converter.missing_GAAP = True
-                print(f'**GAAP指標である{converter.data[key][0]}が見つかりませんでした。**')
-            else:
-                print(f'Non-GAAP指標である{converter.data[key][0]}が見つかりませんでした。')
+    if isIFRS:
+        GAAP = ("IFRSSales", "IFRSNetIncome", "IFRSAssets", "IFRSLiabilities",
+                "IFRSCurrentAssets", "IFRSNonCurrentAssets", 
+                "IFRSNetAssets", "IFRSCurrentLiabilities",
+                "IFRSNonCurrentLiabilities")
+        NonGAAP = ("IFRSOperatingProfits", "IFRSInterest-bearingCurrentLiabilities",
+                  "IFRSInterest-bearingNonCurrentLiabilities")
+        for key, is_missing in is_missing_data.items():
+            if is_missing:
+                if key in GAAP:
+                    converter.missing_GAAP = True
+                    print(f'**GAAP指標である{converter.data[key][0]}が見つかりませんでした。**')
+                elif key in NonGAAP:
+                    print(f'Non-GAAP指標である{converter.data[key][0]}が見つかりませんでした。')
+    else:
+        main_measures = ("Sales", "NetIncome", "Assets", "Liabilities",
+                           "CurrentAssets", "NonCurrentAssets", 
+                           "NetAssets", "CurrentLiabilities",
+                           "NonCurrentLiabilities")
 
+        supplementary_measures = ("OperationProfits", "Interest-bearingCurrentLiabilities",
+                                  "Interest-bearingNonCurrentLiabilities")
+        for key, is_missing in is_missing_data.items():
+            if is_missing:
+                if key in main_measures:
+                    converter.missing_main_measure = True
+                    print(f'**主要な指標である{converter.data[key][0]}が見つかりませんでした。**')
+                elif key in supplementary_measures:
+                    print(f'補完的な指標である{converter.data[key][0]}が見つかりませんでした。')
 
 def extract_target_csv(zip_folder_path: str, extract_to: str) -> None:
     """
@@ -334,6 +390,29 @@ def extract_target_csv(zip_folder_path: str, extract_to: str) -> None:
         except Exception as e:
             print(f"ZIPファイルの削除に失敗しました: {zip_path} - {e}")
 
+def isIFRS(data: dict) -> bool:
+    """
+    会社のデータがIFRS基準かどうかを判定する関数
+
+    Parameters
+    ----------
+    data : dict
+        有報から抽出したデータを格納した辞書
+
+    Returns
+    -------
+    bool
+        IFRS基準の要素が一つでもあればTrue、そうでなければFalse
+    """
+    IFRSIDs = ("IFRSSales", "IFRSOperatingProfits", "IFRSNetIncome", "IFRSAssets", "IFRSLiabilities",
+               "IFRSCurrentAssets", "IFRSNonCurrentAssets", "IFRSNetAssets", "IFRSCurrentLiabilities",
+               "IFRSNonCurrentLiabilities", "IFRSInterest-bearingCurrentLiabilities", "IFRSInterest-bearingNonCurrentLiabilities")
+    for ID in IFRSIDs:
+        if data[ID][1] != -1:
+            return True
+        
+    return False
+
 
 def main():
     with open('config.json', 'r') as config_file:
@@ -341,14 +420,13 @@ def main():
     if config["select_data"] == True:
         paths = [input("CSV file path: ")]
     else:
-        folder_path = input("CSV folder path: ")
+        folder_path = 'CSVs'
         extract_target_csv('ZIPs', folder_path)
         paths = find_csv_files_in_folder(folder_path)
 
     if paths == []:
         print('CSVファイルが見つかりませんでした。')
     missing_GAAP = []
-    # クラスのインスタンス化部分を変更
     for file_path in paths:
         processor = CSVProcessor(file_path)
         processor.load_csv()
@@ -356,9 +434,9 @@ def main():
         print(f'-----{processor.data["CompanyName"][1]}-----')
         processor.save_to_json()
         processor.rename_csv_file()
-        chart = Barchart(processor.json_file_path, config["show_chart"])
+        chart = Barchart(processor.json_file_path, config["show_chart"], isIFRS=isIFRS(processor.data))
         chart.plot()
-        check_missing_data(processor, chart.is_missing_data)
+        check_missing_data(processor, chart.is_missing_data, isIFRS=isIFRS(processor.data))
         print("---------------" + '-'*int(1.5*len(processor.data["CompanyName"][1])))
         if processor.missing_GAAP:
             missing_GAAP.append(processor.data['CompanyName'][1])
