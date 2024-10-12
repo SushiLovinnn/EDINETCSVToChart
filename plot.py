@@ -67,6 +67,11 @@ class Barchart():
             """
             return f'{y * 1e-8:,.0f}億円'
         
+        def missing_checker(data: list) -> bool:
+            if data[1] == -1:
+                return True
+            else:
+                return False
         # figとaxオブジェクトを作成.
         fig, ax = plt.subplots(figsize=(9, 7))
         # y軸にフォーマッターを適用.
@@ -91,11 +96,6 @@ class Barchart():
                 'IFRSNetIncome': '#f63ad6'
                 }
 
-            def missing_checker(data: list) -> bool:
-                if data[1] == -1:
-                    return True
-                else:
-                    return False
             for key, value in self.data.items():
                 self.is_missing_data[key] = missing_checker(value)
             
@@ -224,12 +224,7 @@ class Barchart():
                 'OperatingProfits': '#d874ea',
                 'NetIncome': '#f63ad6'
                 }
-
-            def missing_checker(data: list) -> bool:
-                if data[1] == -1:
-                    return True
-                else:
-                    return False
+            
             for key, value in self.data.items():
                 self.is_missing_data[key] = missing_checker(value)
             
