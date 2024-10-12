@@ -412,15 +412,12 @@ def isIFRS(data: dict) -> bool:
     Returns
     -------
     bool
-        IFRS基準の要素が一つでもあればTrue、そうでなければFalse
+        IFRS基準の要素が一つでも格納されていればTrue、そうでなければFalse
     """
-    IFRSIDs = ("IFRSSales", "IFRSOperatingProfits", "IFRSNetIncome", "IFRSAssets", "IFRSLiabilities",
-               "IFRSCurrentAssets", "IFRSNonCurrentAssets", "IFRSNetAssets", "IFRSCurrentLiabilities",
-               "IFRSNonCurrentLiabilities", "IFRSInterest-bearingCurrentLiabilities", "IFRSInterest-bearingNonCurrentLiabilities")
-    for ID in IFRSIDs:
-        if data[ID][1] != -1:
+    for val in data.values():
+        if val[3] == 1 and val[1] != -1:
             return True
-        
+
     return False
 
 
