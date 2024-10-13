@@ -8,6 +8,21 @@ from plot import Barchart
 
 
 class DataItem:
+    """
+    データ項目を表すクラス。
+
+    Attributes
+    ----------
+    name : str
+        データ項目の名前。
+    value : int | str
+        データ項目の値。数値(-1: 値が見つからないことを表す)または文字列。
+    unit : str
+        データ項目の単位。
+    ifrs_flag : int
+        IFRSかどうかを示すフラグ。1の場合はIFRS、0の場合はIFRSでない。
+    """
+
     def __init__(self, name: str, value: int | str, unit: str, ifrs_flag: int):
         self.name = name
         self.value = value
