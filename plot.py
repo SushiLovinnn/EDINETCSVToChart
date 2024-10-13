@@ -5,6 +5,17 @@ import matplotlib.ticker as ticker
 
 
 
+class DataItem:
+    def __init__(self, name: str, value: int | str, unit: str, ifrs_flag: int):
+        self.name = name
+        self.value = value
+        self.unit = unit
+        self.ifrs_flag = ifrs_flag
+
+    def __str__(self):
+        return f'{self.name}: {self.value} {self.unit}'
+    
+
 class Barchart():
     """
     JSONファイルからデータを読み込み、棒グラフを生成するクラス。
@@ -37,7 +48,9 @@ class Barchart():
         self.data = self.reading_json(json_file_path)
         self.isIFRS = isIFRS
 
-    def reading_json(self, json_file_path: str) -> dict:
+    from typing import Dict
+
+    def reading_json(self, json_file_path: str) -> Dict[str, DataItem]:
         """
         jsonファイルを読み込んでBarchartのdataを返す関数
 
@@ -48,12 +61,16 @@ class Barchart():
         
         Returns
         -------
-        data: dict
+        data: Dict[str, DataItem]
             図のプロットに必要なデータが入った辞書
         """
         with open(json_file_path, 'r', encoding='utf-8') as json_file:
-            data = json.load(json_file)
+            json_data = json.load(json_file)
+        data = {}
+        for key, value in json_data.items():
+            data[key] = DataItem(name=value['name'], value=value['value'], unit=value['unit'], ifrs_flag=value['ifrs_flag'])
         return data
+    
 
 
     def plot(self) -> None:
@@ -67,8 +84,8 @@ class Barchart():
             """
             return f'{y * 1e-8:,.0f}億円'
         
-        def missing_checker(data: list) -> bool:
-            if data[1] == -1:
+        def missing_checker(data: DataItem) -> bool:
+            if data.value == -1:
                 return True
             else:
                 return False
@@ -78,7 +95,7 @@ class Barchart():
         ax.yaxis.set_major_formatter(ticker.FuncFormatter(billions))
         
         # グラフのタイトルを設定.
-        ax.set_title(f"{self.data['CompanyName'][1]} 決算締日: {self.data['EndDate'][1]}", fontsize=16, loc='center')
+        ax.set_title(f"{self.data['CompanyName'].value} 決算締日: {self.data['EndDate'].value}", fontsize=16, loc='center')
         if self.isIFRS:
             # 色の指定.
             colors = {
@@ -104,96 +121,96 @@ class Barchart():
 
             # 貸借対照表(借方)の棒グラフ.
             if self.is_missing_data['IFRSAssets'] == False:
-                bar_Assets = ax.bar(1, self.data['IFRSAssets'][1], width=1, color=colors['IFRSAssets'])[0]
+                bar_Assets = ax.bar(1, self.data['IFRSAssets'].value, width=1, color=colors['IFRSAssets'])[0]
                 ax.text(bar_Assets.get_x() + bar_Assets.get_width() / 2, bar_Assets.get_height() / 2,
-                        self.data['IFRSAssets'][0], ha='center', va='center', color='white', fontsize=12)
+                        self.data['IFRSAssets'].name, ha='center', va='center', color='white', fontsize=12)
             if self.is_missing_data['IFRSNonCurrentAssets'] == False:
-                bar_NonCurrentAssets = ax.bar(1.25, self.data['IFRSNonCurrentAssets'][1], width=0.5, color=colors['IFRSNonCurrentAssets'])[0]
+                bar_NonCurrentAssets = ax.bar(1.25, self.data['IFRSNonCurrentAssets'].value, width=0.5, color=colors['IFRSNonCurrentAssets'])[0]
             if self.is_missing_data['IFRSCurrentAssets'] == False:
-                bar_CurrentAssets = ax.bar(1.25, self.data['IFRSCurrentAssets'][1], bottom=self.data['IFRSNonCurrentAssets'][1], width=0.5, color=colors['IFRSCurrentAssets'])[0]
+                bar_CurrentAssets = ax.bar(1.25, self.data['IFRSCurrentAssets'].value, bottom=self.data['IFRSNonCurrentAssets'].value, width=0.5, color=colors['IFRSCurrentAssets'])[0]
 
             # 貸借対照表(貸方)の棒グラフ.
             if self.is_missing_data['IFRSNetAssets'] == False:
-                bar_NetAssets = ax.bar(2, self.data['IFRSNetAssets'][1], width=1, color=colors['IFRSNetAssets'])[0]
+                bar_NetAssets = ax.bar(2, self.data['IFRSNetAssets'].value, width=1, color=colors['IFRSNetAssets'])[0]
             if self.is_missing_data['IFRSLiabilities'] == False:
                 bar_Liabilities = ax.bar(2, 
-                                         self.data['IFRSLiabilities'][1], bottom=self.data['IFRSNetAssets'][1], width=1,
+                                         self.data['IFRSLiabilities'].value, bottom=self.data['IFRSNetAssets'].value, width=1,
                                          color=colors['IFRSLiabilities'])[0]
             if self.is_missing_data['IFRSNonCurrentLiabilities'] == False:
                 bar_NonCurrentLiabilities = ax.bar(1.75, 
-                                                   self.data['IFRSNonCurrentLiabilities'][1], bottom=self.data['IFRSNetAssets'][1], 
+                                                   self.data['IFRSNonCurrentLiabilities'].value, bottom=self.data['IFRSNetAssets'].value, 
                                                    width=0.5, color=colors['IFRSNonCurrentLiabilities'])[0]
             if self.is_missing_data['IFRSCurrentLiabilities'] == False:
                 bar_CurrentLiabilities = ax.bar(1.75, 
-                                                self.data['IFRSCurrentLiabilities'][1], bottom=self.data['IFRSNonCurrentLiabilities'][1]+self.data['IFRSNetAssets'][1], 
+                                                self.data['IFRSCurrentLiabilities'].value, bottom=self.data['IFRSNonCurrentLiabilities'].value+self.data['IFRSNetAssets'].value, 
                                                 width=0.5, color=colors['IFRSCurrentLiabilities'])[0]
 
             # 有利子負債の棒グラフ.
             if self.is_missing_data['IFRSInterest-bearingNonCurrentLiabilities'] == False:
                 bar_InterestbearingNonCurrentLiabilities = ax.bar(2.75, 
-                                                                  self.data['IFRSInterest-bearingNonCurrentLiabilities'][1], 
-                                                                  bottom=bar_CurrentLiabilities.get_y()-self.data['IFRSInterest-bearingNonCurrentLiabilities'][1], 
+                                                                  self.data['IFRSInterest-bearingNonCurrentLiabilities'].value, 
+                                                                  bottom=bar_CurrentLiabilities.get_y()-self.data['IFRSInterest-bearingNonCurrentLiabilities'].value, 
                                                                   width=0.5, color=colors['IFRSInterest-bearingNonCurrentLiabilities'])[0]
             if self.is_missing_data['IFRSInterest-bearingCurrentLiabilities'] == False:
                 bar_InterestbearingCurrentLiabilities = ax.bar(2.75, 
-                                                               self.data['IFRSInterest-bearingCurrentLiabilities'][1], 
+                                                               self.data['IFRSInterest-bearingCurrentLiabilities'].value, 
                                                                bottom=bar_CurrentLiabilities.get_y(), width=0.5, 
                                                                color=colors['IFRSInterest-bearingCurrentLiabilities'])[0]
 
             # 損益計算書の棒グラフ.
             if self.is_missing_data['IFRSSales'] == False:
-                bar_Sales = ax.bar(4, self.data['IFRSSales'][1], width=1, color=colors['IFRSSales'])[0]
+                bar_Sales = ax.bar(4, self.data['IFRSSales'].value, width=1, color=colors['IFRSSales'])[0]
             if self.is_missing_data['IFRSOperatingProfits'] == False:
-                bar_OperatingProfits = ax.bar(3.75, self.data['IFRSOperatingProfits'][1], width=0.5, color=colors['IFRSOperatingProfits'])[0]
+                bar_OperatingProfits = ax.bar(3.75, self.data['IFRSOperatingProfits'].value, width=0.5, color=colors['IFRSOperatingProfits'])[0]
             if self.is_missing_data['IFRSNetIncome'] ==  False:
-                bar_NetIncome = ax.bar(4.25, self.data['IFRSNetIncome'][1], width=0.5, color=colors['IFRSNetIncome'])[0]
+                bar_NetIncome = ax.bar(4.25, self.data['IFRSNetIncome'].value, width=0.5, color=colors['IFRSNetIncome'])[0]
 
             # 貸借対照表(借方)につけるテキスト.
             if self.is_missing_data['IFRSNonCurrentAssets'] == False:
                 ax.text(bar_NonCurrentAssets.get_x() + bar_NonCurrentAssets.get_width() / 2, bar_NonCurrentAssets.get_height() / 2,
-                        self.data['IFRSNonCurrentAssets'][0], ha='center', va='center', color='black', fontsize=10)
+                        self.data['IFRSNonCurrentAssets'].name, ha='center', va='center', color='black', fontsize=10)
             if self.is_missing_data['IFRSCurrentAssets'] == False:
                 ax.text(bar_CurrentAssets.get_x() + bar_CurrentAssets.get_width() / 2,
                         bar_CurrentAssets.get_y() + bar_CurrentAssets.get_height() / 2,
-                        self.data['IFRSCurrentAssets'][0], ha='center', va='center', color='black', fontsize=10)
+                        self.data['IFRSCurrentAssets'].name, ha='center', va='center', color='black', fontsize=10)
 
             # 貸借対照表(貸方)につけるテキスト.
             if self.is_missing_data['IFRSNetAssets'] == False:
                 ax.text(bar_NetAssets.get_x() + bar_NetAssets.get_width() / 2, bar_NetAssets.get_height() / 2,
-                        self.data['IFRSNetAssets'][0], ha='center', va='center', color='white', fontsize=12)
+                        self.data['IFRSNetAssets'].name, ha='center', va='center', color='white', fontsize=12)
             if self.is_missing_data['IFRSLiabilities'] == False:
                 ax.text(bar_Liabilities.get_x() + bar_Liabilities.get_width() / 2, 
                         bar_Liabilities.get_y() + bar_Liabilities.get_height() / 2,
-                        self.data['IFRSLiabilities'][0], ha='center', va='center', color='white', fontsize=12)
+                        self.data['IFRSLiabilities'].name, ha='center', va='center', color='white', fontsize=12)
             if self.is_missing_data['IFRSNonCurrentLiabilities'] == False:
                 ax.text(bar_NonCurrentLiabilities.get_x() + bar_NonCurrentLiabilities.get_width() / 2,
                         bar_NonCurrentLiabilities.get_y() + bar_NonCurrentLiabilities.get_height() / 2,
-                        self.data['IFRSNonCurrentLiabilities'][0], ha='center', va='center', color='black', fontsize=10)
+                        self.data['IFRSNonCurrentLiabilities'].name, ha='center', va='center', color='black', fontsize=10)
             if self.is_missing_data['IFRSCurrentLiabilities'] == False:
                 ax.text(bar_CurrentLiabilities.get_x() + bar_CurrentLiabilities.get_width() / 2,
                         bar_CurrentLiabilities.get_y() + bar_CurrentLiabilities.get_height() / 2,
-                        self.data['IFRSCurrentLiabilities'][0], ha='center', va='center', color='black', fontsize=10)
+                        self.data['IFRSCurrentLiabilities'].name, ha='center', va='center', color='black', fontsize=10)
 
             # 有利子負債につけるテキスト.
             if self.is_missing_data['IFRSInterest-bearingNonCurrentLiabilities'] == False:
                 ax.text(bar_InterestbearingNonCurrentLiabilities.get_x() + bar_InterestbearingNonCurrentLiabilities.get_width() / 2,
                         bar_InterestbearingNonCurrentLiabilities.get_y() + bar_InterestbearingNonCurrentLiabilities.get_height() / 2,
-                        self.data['IFRSInterest-bearingNonCurrentLiabilities'][0], ha='center', va='center', color='black', fontsize=10)
+                        self.data['IFRSInterest-bearingNonCurrentLiabilities'].name, ha='center', va='center', color='black', fontsize=10)
             if self.is_missing_data['IFRSInterest-bearingCurrentLiabilities'] == False:
                 ax.text(bar_InterestbearingCurrentLiabilities.get_x() + bar_InterestbearingCurrentLiabilities.get_width() / 2,
                         bar_InterestbearingCurrentLiabilities.get_y() + bar_InterestbearingCurrentLiabilities.get_height() / 2,
-                        self.data['IFRSInterest-bearingCurrentLiabilities'][0], ha='center', va='center', color='black', fontsize=10)
+                        self.data['IFRSInterest-bearingCurrentLiabilities'].name, ha='center', va='center', color='black', fontsize=10)
 
             # 損益計算書につけるテキスト.
             if self.is_missing_data['IFRSSales'] == False:
                 ax.text(bar_Sales.get_x() + bar_Sales.get_width() / 2, bar_Sales.get_height() / 2,
-                        self.data['IFRSSales'][0], ha='center', va='center', color='white', fontsize=12)
+                        self.data['IFRSSales'].name, ha='center', va='center', color='white', fontsize=12)
             if self.is_missing_data['IFRSNetIncome'] == False:
                 ax.text(bar_NetIncome.get_x() + 0.25, bar_NetIncome.get_height() / 2,
-                        self.data['IFRSNetIncome'][0], ha='center', va='center', color='black', fontsize=10)
+                        self.data['IFRSNetIncome'].name, ha='center', va='center', color='black', fontsize=10)
             if self.is_missing_data['IFRSOperatingProfits'] == False:
                 ax.text(bar_OperatingProfits.get_x(), bar_OperatingProfits.get_height() / 2,
-                        self.data['IFRSOperatingProfits'][0], ha='center', va='center', color='black', fontsize=10)
+                        self.data['IFRSOperatingProfits'].name, ha='center', va='center', color='black', fontsize=10)
                     
             # B/SからP/Lに線を引く.
             if (self.is_missing_data['IFRSLiabilities'] or self.is_missing_data['IFRSSales']) == False:
