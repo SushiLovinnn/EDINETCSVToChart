@@ -8,6 +8,18 @@ matplotlib.use('Agg')
 
 
 class DataItem:
+    """
+    DataItem クラスは、データ項目を表します。
+
+    属性:
+        name (str): データ項目の名前。
+        value (int | str): データ項目の値。整数(-1)または文字列。
+        unit (str): データ項目の単位。
+        ifrs_flag (int): IFRSフラグ。1か0の整数。
+
+    メソッド:
+        __str__(): データ項目を文字列として返します。
+    """
     def __init__(self, name: str, value: int | str, unit: str, ifrs_flag: int):
         self.name = name
         self.value = value
@@ -87,6 +99,15 @@ class Barchart():
             return f'{y * 1e-8:,.0f}億円'
         
         def missing_checker(data: DataItem) -> bool:
+            """
+            指定されたデータ項目が欠損しているかどうかをチェックします。
+
+            Args:
+                data (DataItem): チェック対象のデータ項目。
+
+            Returns:
+                bool: データ項目が欠損値（値が-1）である場合はTrue、それ以外の場合はFalse。
+            """
             if data.value == -1:
                 return True
             else:
@@ -359,5 +380,5 @@ class Barchart():
             # y軸のグリッドラインを追加
             ax.yaxis.grid(True, linestyle='--', color='gray', alpha=0.7)
 
-            # グラフを表示.
+            # グラフを保存.
             plt.savefig('plot.png')
