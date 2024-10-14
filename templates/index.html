@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>プロット表示</title>
+    <title>CSV Upload</title>
 </head>
 <body>
-    <h1>プロット画像</h1>
-    <img src="{{ url_for('plot') }}" alt="プロット画像">
+    <h1>Upload CSV and Generate Plot</h1>
+    <form action="/process" method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Upload">
+    </form>
 </body>
 </html>

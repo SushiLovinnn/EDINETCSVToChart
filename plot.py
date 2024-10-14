@@ -1,8 +1,10 @@
 import json
 import matplotlib.pyplot as plt
+import matplotlib
 import matplotlib_fontja
 import matplotlib.ticker as ticker
 
+matplotlib.use('Agg')
 
 
 class DataItem:
@@ -223,7 +225,7 @@ class Barchart():
             # y軸のグリッドラインを追加
             ax.yaxis.grid(True, linestyle='--', color='gray', alpha=0.7)
 
-            # グラフを表示.
+            # グラフを保存.
             plt.savefig('plot.png')
         else:
                 # 色の指定.
@@ -358,4 +360,4 @@ class Barchart():
             ax.yaxis.grid(True, linestyle='--', color='gray', alpha=0.7)
 
             # グラフを表示.
-            plt.savefig('path_to_save_plot.png')
+            plt.savefig('plot.png')
