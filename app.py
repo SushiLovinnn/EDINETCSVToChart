@@ -1,29 +1,27 @@
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request, send_file, redirect, url_for
 import os
 from main import CSVProcessor, Barchart, isIFRS, check_missing_data
 
 app = Flask(__name__)
 
 @app.route('/')
-def home():
-    return render_template('index.html')
+def index():
+    json_files = os.listdir('json_file')
+    return render_template('index.html', json_files=json_files)
 
-@app.route('/process', methods=['POST'])
-def process_file():
-    file = request.files['file']
-    file_path = os.path.join('uploads', file.filename)
-    file.save(file_path)
+@app.route('/process_json', methods=['POST'])
+def process_json():
+    json_file = request.form['json_file']
+    json_file_path = os.path.join('json_file', json_file)
+    
+    # プロット生成
+    barchart = Barchart(json_file_path, show_chart=False, isIFRS=True)
+    barchart.plot()
+    
+    return redirect(url_for('result'))
 
-    processor = CSVProcessor(file_path)
-    processor.load_csv()
-    processor.process_data()
-    processor.save_to_json()
-    processor.rename_csv_file()
-
-    chart = Barchart(processor.json_file_path, True, isIFRS=isIFRS(processor.data))
-    chart.plot()
-    check_missing_data(processor, chart.is_missing_data, isIFRS=isIFRS(processor.data))
-
+@app.route('/result')
+def result():
     return render_template('result.html')
 
 @app.route('/plot')

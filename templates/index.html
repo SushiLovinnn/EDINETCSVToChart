@@ -2,13 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CSV Upload</title>
+    <title>CSV Upload and JSON Plot</title>
 </head>
 <body>
-    <h1>Upload CSV and Generate Plot</h1>
-    <form action="/process" method="post" enctype="multipart/form-data">
-        <input type="file" name="file">
-        <input type="submit" value="Upload">
+
+    <h1>Select JSON and Generate Plot</h1>
+    <form action="/process_json" method="post">
+        <select name="json_file">
+            <!-- JSONファイルのオプションはサーバーサイドで動的に生成 -->
+            {% for json_file in json_files %}
+                <option value="{{ json_file }}">{{ json_file }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Generate Plot">
     </form>
 </body>
 </html>
