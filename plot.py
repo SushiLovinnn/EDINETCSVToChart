@@ -224,7 +224,7 @@ class Barchart():
             ax.yaxis.grid(True, linestyle='--', color='gray', alpha=0.7)
 
             # グラフを表示.
-            plt.show()
+            plt.savefig('plot.png')
         else:
                 # 色の指定.
             colors = {
@@ -291,11 +291,11 @@ class Barchart():
 
             # 損益計算書の棒グラフ.
             if self.is_missing_data['Sales'] == False:
-                bar_Sales = ax.bar(4, self.data['Sales'][1], width=1, color=colors['Sales'])[0]
+                bar_Sales = ax.bar(4, self.data['Sales'].value, width=1, color=colors['Sales'])[0]
             if self.is_missing_data['OperatingProfits'] == False:
-                bar_OperatingProfits = ax.bar(3.75, self.data['OperatingProfits'][1], width=0.5, color=colors['OperatingProfits'])[0]
+                bar_OperatingProfits = ax.bar(3.75, self.data['OperatingProfits'].value, width=0.5, color=colors['OperatingProfits'])[0]
             if self.is_missing_data['NetIncome'] ==  False:
-                bar_NetIncome = ax.bar(4.25, self.data['NetIncome'][1], width=0.5, color=colors['NetIncome'])[0]
+                bar_NetIncome = ax.bar(4.25, self.data['NetIncome'].value, width=0.5, color=colors['NetIncome'])[0]
 
 
             # 貸借対照表(借方)につけるテキスト.
@@ -358,4 +358,4 @@ class Barchart():
             ax.yaxis.grid(True, linestyle='--', color='gray', alpha=0.7)
 
             # グラフを表示.
-            plt.show()
+            plt.savefig('path_to_save_plot.png')
