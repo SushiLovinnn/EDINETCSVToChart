@@ -97,6 +97,7 @@ class CSVProcessor:
         )
         self.Sales_IDs = (
             ('jpcrp_cor:OperatingRevenue1SummaryOfBusinessResults', 'CurrentYearDuration'),
+            ('jpcrp_cor:NetSalesSummaryOfBusinessResults', 'CurrentYearDuration'),
         )
         self.IFRSOperatingProfits_IDs = (
             ('jpigp_cor:OperatingProfitLossIFRS', 'CurrentYearDuration'),
