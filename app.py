@@ -21,7 +21,7 @@ def process_json():
     json_file_path = os.path.join('json_file', json_file)
     
     # プロット生成
-    barchart = Barchart(json_file_path, show_chart=False, isIFRS=True)
+    barchart = Barchart(json_file_path, show_chart=True, isIFRS=True)
     barchart.plot()
     
     return redirect(url_for('result'))

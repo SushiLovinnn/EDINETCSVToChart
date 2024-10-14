@@ -3,12 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Plot Result</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Plot Result</h1>
-    <div id="plot">
-        <img src="/plot" alt="Generated Plot">
+    <div class="container">
+        <h1>Plot Result</h1>
+        <div id="plot">
+            <img src="/plot" alt="Generated Plot">
+        </div>
+        <a href="/" class="button">Go Back</a>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
     </div>
-    <a href="/">Go Back</a>
 </body>
 </html>
