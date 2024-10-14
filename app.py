@@ -1,12 +1,18 @@
 from flask import Flask, render_template, request, send_file, redirect, url_for
 import os
-from main import CSVProcessor, Barchart, isIFRS, check_missing_data
+from plot import Barchart
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
     json_files = os.listdir('json_file')
+    return render_template('index.html', json_files=json_files)
+
+@app.route('/search_json', methods=['GET'])
+def search_json():
+    query = request.args.get('query', '')
+    json_files = [f for f in os.listdir('json_file') if query.lower() in f.lower()]
     return render_template('index.html', json_files=json_files)
 
 @app.route('/process_json', methods=['POST'])
@@ -29,6 +35,4 @@ def plot():
     return send_file('plot.png', mimetype='image/png')
 
 if __name__ == '__main__':
-    if not os.path.exists('uploads'):
-        os.makedirs('uploads')
     app.run(debug=True)

@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CSV Upload and JSON Plot</title>
+    <title>Select JSON and Generate Plot</title>
 </head>
 <body>
-
     <h1>Select JSON and Generate Plot</h1>
+    <form action="/search_json" method="get">
+        <input type="text" name="query" placeholder="Search JSON files">
+        <input type="submit" value="Search">
+    </form>
     <form action="/process_json" method="post">
         <select name="json_file">
             <!-- JSONファイルのオプションはサーバーサイドで動的に生成 -->
