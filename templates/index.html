@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select JSON and Generate Plot</title>
+</head>
+<body>
+    <h1>Select JSON and Generate Plot</h1>
+    <form action="/search_json" method="get">
+        <input type="text" name="query" placeholder="Search JSON files">
+        <input type="submit" value="Search">
+    </form>
+    <form action="/process_json" method="post">
+        <select name="json_file">
+            <!-- JSONファイルのオプションはサーバーサイドで動的に生成 -->
+            {% for json_file in json_files %}
+                <option value="{{ json_file }}">{{ json_file }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Generate Plot">
+    </form>
+</body>
+</html>
