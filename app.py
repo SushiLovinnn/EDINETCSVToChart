@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, send_file, redirect, url_for
 import os
-from plot import Barchart
+from plot_web import Barchart  
 
 app = Flask(__name__)
 
