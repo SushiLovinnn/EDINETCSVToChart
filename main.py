@@ -3,7 +3,7 @@ import zipfile
 import shutil
 import json
 import pandas as pd
-from plot_web import Barchart
+from plot import Barchart
 
 
 
