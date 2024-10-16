@@ -95,7 +95,9 @@ if not API_TOKEN:
 edn = Edinet(API_TOKEN)
 
 # ドキュメントのリストを取得
-doc_list = edn.get_document_list(datetime.today(), type_=2)
+date_string = "2024-06-25"
+specified_date = datetime.strptime(date_string, "%Y-%m-%d")
+doc_list = edn.get_document_list(specified_date, type_=2)
 
 for document in doc_list["results"]:
     doc = Document(
@@ -128,8 +130,8 @@ for document in doc_list["results"]:
         csvFlag=document["csvFlag"],
         legalStatus=document["legalStatus"]
     )
-    #書類がCSVファイルで、縦覧可能で、有価証券報告書の場合にcsvファイルを取得.
-    if doc.csvFlag == '1' and doc.legalStatus == '1' and doc.docTypeCode == "120":
+    #書類がCSVファイルで、縦覧可能で、有価証券報告書で、ファンドでない場合にcsvファイルを取得.
+    if doc.csvFlag == '1' and doc.legalStatus == '1' and doc.docTypeCode == "120" and doc.fundCode is None:
         print(doc)
         doc_data = edn.get_document(doc.docID, 5)
         with open(f"ZIPs/{doc.docID}.zip", "wb") as f:
