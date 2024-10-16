@@ -14,7 +14,6 @@
         </form>
         <form action="/process_json" method="post" class="select-form">
             <select name="json_file">
-                <!-- JSONファイルのオプションはサーバーサイドで動的に生成 -->
                 {% for json_file in json_files %}
                     <option value="{{ json_file }}">{{ json_file }}</option>
                 {% endfor %}

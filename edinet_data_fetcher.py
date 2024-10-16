@@ -81,12 +81,17 @@ class Document:
         self.legalStatus = legalStatus
 
     def __str__(self):
-        return f"{self.docDescription} ({self.docID})"
+        return f"{self.secCode}: {self.filerName} ({self.docID})"
 
 class EdinetDataFetcher():
-    def __init__(self, dates_string, sleep_time=1):
+    def __init__(self, dates_string: str, sleep_time=1):   
         self.date_string = dates_string
         self.sleep_time = sleep_time
+        """
+        Args:
+        dates_string (str): 取得する日付の文字列（YYYY-MM-DD）.
+        sleep_time (int): スリープ時間（秒）デフォルトは1秒.
+        """
     
     def fetch_data(self):
         # .envファイルから環境変数を読み込む
