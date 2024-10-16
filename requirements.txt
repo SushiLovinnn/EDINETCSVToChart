@@ -2,3 +2,6 @@ Flask
 pandas
 matplotlib
 matplotlib_fontja
+edinet_wrap
+requests
+python-dotenv
