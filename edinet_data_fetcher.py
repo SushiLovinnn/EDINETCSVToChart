@@ -4,6 +4,7 @@ import json
 import requests
 import os
 from dotenv import load_dotenv
+import time
 
 class Document:
     """
@@ -82,58 +83,62 @@ class Document:
     def __str__(self):
         return f"{self.docDescription} ({self.docID})"
 
+class EdinetDataFetcher():
+    def __init__(self, dates_string, sleep_time=1):
+        self.date_string = dates_string
+        self.sleep_time = sleep_time
+    
+    def fetch_data(self):
+        # .envファイルから環境変数を読み込む
+        load_dotenv()
 
-# .envファイルから環境変数を読み込む
-load_dotenv()
+        # APIのトークンを環境変数から取得
+        API_TOKEN = os.getenv("API_TOKEN")
 
-# APIのトークンを環境変数から取得
-API_TOKEN = os.getenv("API_TOKEN")
+        if not API_TOKEN:
+            raise ValueError("API_TOKEN is not set in the environment variables")
 
-if not API_TOKEN:
-    raise ValueError("API_TOKEN is not set in the environment variables")
+        edn = Edinet(API_TOKEN)
 
-edn = Edinet(API_TOKEN)
+        # ドキュメントのリストを取得
+        specified_date = datetime.strptime(self.date_string, "%Y-%m-%d")
+        doc_list = edn.get_document_list(specified_date, type_=2)
 
-# ドキュメントのリストを取得
-date_string = "2024-06-25"
-specified_date = datetime.strptime(date_string, "%Y-%m-%d")
-doc_list = edn.get_document_list(specified_date, type_=2)
-
-for document in doc_list["results"]:
-    doc = Document(
-        docID=document["docID"],
-        edinetCode=document["edinetCode"],
-        secCode=document["secCode"],
-        JCN=document["JCN"],
-        filerName=document["filerName"],
-        fundCode=document["fundCode"],
-        ordinanceCode=document["ordinanceCode"],
-        formCode=document["formCode"],
-        docTypeCode=document["docTypeCode"],
-        periodStart=document["periodStart"],
-        periodEnd=document["periodEnd"],
-        submitDateTime=document["submitDateTime"],
-        docDescription=document["docDescription"],
-        issuerEdinetCode=document["issuerEdinetCode"],
-        subjectEdinetCode=document["subjectEdinetCode"],
-        subsidiaryEdinetCode=document["subsidiaryEdinetCode"],
-        currentReportReason=document["currentReportReason"],
-        parentDocID=document["parentDocID"],
-        opeDateTime=document["opeDateTime"],
-        withdrawalStatus=document["withdrawalStatus"],
-        docInfoEditStatus=document["docInfoEditStatus"],
-        disclosureStatus=document["disclosureStatus"],
-        xbrlFlag=document["xbrlFlag"],
-        pdfFlag=document["pdfFlag"],
-        attachDocFlag=document["attachDocFlag"],
-        englishDocFlag=document["englishDocFlag"],
-        csvFlag=document["csvFlag"],
-        legalStatus=document["legalStatus"]
-    )
-    #書類がCSVファイルで、縦覧可能で、有価証券報告書で、ファンドでない場合にcsvファイルを取得.
-    if doc.csvFlag == '1' and doc.legalStatus == '1' and doc.docTypeCode == "120" and doc.fundCode is None:
-        print(doc)
-        doc_data = edn.get_document(doc.docID, 5)
-        with open(f"ZIPs/{doc.docID}.zip", "wb") as f:
-            f.write(doc_data)
-        break
+        for document in doc_list["results"]:
+            doc = Document(
+                docID=document["docID"],
+                edinetCode=document["edinetCode"],
+                secCode=document["secCode"],
+                JCN=document["JCN"],
+                filerName=document["filerName"],
+                fundCode=document["fundCode"],
+                ordinanceCode=document["ordinanceCode"],
+                formCode=document["formCode"],
+                docTypeCode=document["docTypeCode"],
+                periodStart=document["periodStart"],
+                periodEnd=document["periodEnd"],
+                submitDateTime=document["submitDateTime"],
+                docDescription=document["docDescription"],
+                issuerEdinetCode=document["issuerEdinetCode"],
+                subjectEdinetCode=document["subjectEdinetCode"],
+                subsidiaryEdinetCode=document["subsidiaryEdinetCode"],
+                currentReportReason=document["currentReportReason"],
+                parentDocID=document["parentDocID"],
+                opeDateTime=document["opeDateTime"],
+                withdrawalStatus=document["withdrawalStatus"],
+                docInfoEditStatus=document["docInfoEditStatus"],
+                disclosureStatus=document["disclosureStatus"],
+                xbrlFlag=document["xbrlFlag"],
+                pdfFlag=document["pdfFlag"],
+                attachDocFlag=document["attachDocFlag"],
+                englishDocFlag=document["englishDocFlag"],
+                csvFlag=document["csvFlag"],
+                legalStatus=document["legalStatus"]
+            )
+            #書類がCSVファイルで、縦覧可能で、有価証券報告書で、ファンドでない場合にcsvファイルを取得.
+            if doc.csvFlag == '1' and doc.legalStatus == '1' and doc.docTypeCode == "120" and doc.fundCode is None:
+                print(doc)
+                doc_data = edn.get_document(doc.docID, 5)
+                with open(f"ZIPs/{doc.docID}.zip", "wb") as f:
+                    f.write(doc_data)
+                time.sleep(self.sleep_time)
