@@ -15,7 +15,7 @@
         <form action="/process_json" method="post" class="select-form">
             <select name="json_file">
                 {% for json_file in json_files %}
-                    <option value="{{ json_file }}">{{ json_file }}</option>
+                    <option value="{{ json_file | e }}">{{ json_file | e }}</option>
                 {% endfor %}
             </select>
             <input type="submit" value="Generate Plot">
@@ -24,7 +24,7 @@
             {% if messages %}
                 <ul class="flashes">
                     {% for message in messages %}
-                        <li>{{ message }}</li>
+                        <li>{{ message | e }}</li>
                     {% endfor %}
                 </ul>
             {% endif %}

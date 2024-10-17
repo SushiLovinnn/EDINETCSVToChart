@@ -46,11 +46,7 @@ class CSVProcessor:
     missing_main_measure : bool
         主要な指標が欠落しているかどうかを示すフラグ。
     data : dict
-        データ項目の辞書。各キーはデータ項目名であり、値はリストです。
-        リストの各要素は以下の通りです:
-        - データ項目名 (str)
-        - データ (int/float)
-        - 単位 (str)
+        データ項目の辞書。各キーはデータ項目名であり、値はDataItemオブジェクト.
     """
     def __init__(self, file_path: str):
         self.data = {
