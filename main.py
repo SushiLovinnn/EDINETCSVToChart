@@ -482,6 +482,10 @@ def main():
     missing_GAAP = []
     missing_main_measure = []
     for file_path in paths:
+        if config["process_unprocessed_csv_only"]:
+            if not file_path.startswith('CSVs/jpcrp030000'):
+                print(f'処理対象外のCSVファイルです: {file_path}')
+                continue
         processor = CSVProcessor(file_path)
         processor.load_csv()
         processor.process_data()

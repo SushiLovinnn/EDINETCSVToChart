@@ -12,7 +12,7 @@ def is_valid_date(year, month, day):
         return False
 
 year = 2024
-day_from = (3, 26)
+day_from = (3, 29)
 day_to = (4, 10) #半開区間で指定. 3/22から3/31まで取得する場合は(3, 32)とする.
 fetch_flag = False
 

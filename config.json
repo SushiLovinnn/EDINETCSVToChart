@@ -1,4 +1,5 @@
 {
     "show_chart": false,
-    "select_data": false
+    "select_data": false,
+    "process_unprocessed_csv_only": true
 }
