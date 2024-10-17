@@ -6,6 +6,8 @@ import os
 from dotenv import load_dotenv
 import time
 
+
+
 class Document:
     """
     メタデータの識別子です。
@@ -84,9 +86,10 @@ class Document:
         return f"{self.secCode}: {self.filerName} ({self.docID})"
 
 class EdinetDataFetcher():
-    def __init__(self, dates_string: str, sleep_time=1):   
+    def __init__(self, dates_string: str, sleep_time=1, fetch_today=False):   
         self.date_string = dates_string
         self.sleep_time = sleep_time
+        self.fetch_today = fetch_today
         """
         Args:
         dates_string (str): 取得する日付の文字列（YYYY-MM-DD）.
@@ -106,7 +109,10 @@ class EdinetDataFetcher():
         edn = Edinet(API_TOKEN)
 
         # ドキュメントのリストを取得
-        specified_date = datetime.strptime(self.date_string, "%Y-%m-%d")
+        if self.fetch_today:
+            specified_date = datetime.today()
+        else:
+            specified_date = datetime.strptime(self.date_string, "%Y-%m-%d")
         doc_list = edn.get_document_list(specified_date, type_=2)
 
         for document in doc_list["results"]:
