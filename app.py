@@ -1,11 +1,12 @@
-from flask import Flask, render_template, request, send_file, redirect, url_for
+from flask import Flask, render_template, request, flash, redirect, url_for, session, send_file
 import os
-from plot_web import Barchart  
-from main import isIFRS
-
-
+import json
+import uuid
+from plot_web import Barchart
+from plot_saver import PlotSaver
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'  # セッションのための秘密鍵
 
 @app.route('/')
 def index():
@@ -23,19 +24,37 @@ def process_json():
     json_file = request.form['json_file']
     json_file_path = os.path.join('json_file', json_file)
     
-    # プロット生成
+    # 一意の識別子を生成
+    session_id = str(uuid.uuid4())
+    session['session_id'] = session_id
+
+    # Barchartクラスを使用してプロットを作成
     barchart = Barchart(json_file_path, show_chart=True)
-    barchart.plot()
-    
+    plot = barchart.plot()
+
+    # PlotSaverクラスを使用してプロットを保存
+    plot_saver = PlotSaver()
+    plot_paths = plot_saver.save_plots([plot])
+    session['plot_paths'] = plot_paths
+
+    flash(f'Plot generated for {json_file}')
     return redirect(url_for('result'))
 
 @app.route('/result')
 def result():
     return render_template('result.html')
 
-@app.route('/plot')
-def plot():
-    return send_file('plot.png', mimetype='image/png')
+@app.route('/plot/<filename>')
+def plot(filename):
+    return send_file(os.path.join('static', 'plots', filename), mimetype='image/png')
+
+@app.route('/cleanup')
+def cleanup():
+    plot_paths = session.get('plot_paths', [])
+    plot_saver = PlotSaver()
+    plot_saver.delete_plots(plot_paths)
+    session.pop('plot_paths', None)
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)
