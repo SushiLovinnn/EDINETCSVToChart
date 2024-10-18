@@ -4,9 +4,13 @@ import json
 import uuid
 from plot_web import Barchart
 from plot_saver import PlotSaver
+from dotenv import load_dotenv
+
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # セッションのための秘密鍵
+
+load_dotenv()
+app.secret_key = os.getenv('SECRET_KEY')
 
 @app.route('/')
 def index():
