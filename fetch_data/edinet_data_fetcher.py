@@ -1,7 +1,7 @@
 from edinet import Edinet
 from datetime import datetime
 import json
-import requests
+import requests                                  
 import os
 from dotenv import load_dotenv
 import time
@@ -113,7 +113,7 @@ class EdinetDataFetcher():
             specified_date = datetime.today()
         else:
             specified_date = datetime.strptime(self.date_string, "%Y-%m-%d")
-        doc_list = edn.get_document_list(specified_date, type_=2)
+        doc_list = edn.get_document_list(specified_date, withdocs=True)
 
         for document in doc_list["results"]:
             doc = Document(
