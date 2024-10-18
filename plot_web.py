@@ -92,7 +92,7 @@ class Barchart():
     def check_missing_data(self) -> Dict[str, bool]:
             is_missing_data = {}
             for key, value in self.data.items():
-                is_missing_data[key] = value == -1
+                is_missing_data[key] = value.value == -1
         
             return is_missing_data
 
