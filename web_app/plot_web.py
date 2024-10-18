@@ -3,8 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 import matplotlib_fontja
 import matplotlib.ticker as ticker
-from main import isIFRS
-
+from typing import Dict
 
 matplotlib.use('Agg')
 
@@ -30,7 +29,26 @@ class DataItem:
 
     def __str__(self):
         return f'{self.name}: {self.value} {self.unit}'
-    
+
+def isIFRS(data: Dict[str, DataItem]) -> bool:
+        """
+        会社のデータがIFRS基準かどうかを判定する関数
+
+        data : Dict[str, DataItem]
+        ----------
+        data : DataItem
+            有報から抽出したデータを格納した辞書
+
+        Returns
+        -------
+        bool
+            IFRS基準の要素が一つでも格納されていればTrue、そうでなければFalse
+        """
+        for key, val in data.items():
+            if val.ifrs_flag and val.value != -1:
+                return True
+
+        return False
 
 class Barchart():
     """
@@ -64,7 +82,7 @@ class Barchart():
         self.show_chart = show_chart
         self.isIFRS = True if isIFRS(self.data) else False
 
-    from typing import Dict
+
 
     def reading_json(self, json_file_path: str) -> Dict[str, DataItem]:
         """

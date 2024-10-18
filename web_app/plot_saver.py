@@ -13,7 +13,7 @@ class PlotSaver:
 
         plot_paths = []
         for i, plot in enumerate(plots):
-            plot_path = os.path.join('static', 'plots', f'{session_id}_plot_{i}.png')
+            plot_path = os.path.join('web_app', 'static', 'plots', f'{session_id}_plot_{i}.png')
             plot.savefig(plot_path)
             plot_paths.append(plot_path)
             print(f"Plot saved to {plot_path}")
