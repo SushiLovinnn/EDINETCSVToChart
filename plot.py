@@ -79,7 +79,8 @@ class Barchart():
             json_data = json.load(json_file)
         data = {}
         for key, value in json_data.items():
-            data[key] = DataItem(name=value['name'], value=value['value'], unit=value['unit'], ifrs_flag=value['ifrs_flag'])
+            data[key] = DataItem(name=value['name'], value=value['value'], 
+                                 unit=value['unit'], ifrs_flag=value['ifrs_flag'])
         return data
     
 

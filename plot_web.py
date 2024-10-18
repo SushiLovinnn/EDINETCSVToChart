@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import matplotlib
 import matplotlib_fontja
 import matplotlib.ticker as ticker
+from main import isIFRS
+
 
 matplotlib.use('Agg')
 
@@ -55,12 +57,12 @@ class Barchart():
         棒グラフを生成して表示する。
     """
 
-    def __init__(self, json_file_path: str, show_chart: bool, isIFRS: bool) -> None:
+    def __init__(self, json_file_path: str, show_chart: bool) -> None:
         self.json_file_path = json_file_path
         self.is_missing_data = {}
         self.show_chart = show_chart
         self.data = self.reading_json(json_file_path)
-        self.isIFRS = isIFRS
+        self.isIFRS = True if isIFRS(self.data) else False
 
     from typing import Dict
 
@@ -82,7 +84,8 @@ class Barchart():
             json_data = json.load(json_file)
         data = {}
         for key, value in json_data.items():
-            data[key] = DataItem(name=value['name'], value=value['value'], unit=value['unit'], ifrs_flag=value['ifrs_flag'])
+            data[key] = DataItem(name=value['name'], value=value['value'], 
+                                 unit=value['unit'], ifrs_flag=value['ifrs_flag'])
         return data
     
 
@@ -137,6 +140,7 @@ class Barchart():
                 }
 
             for key, value in self.data.items():
+                print(f"Processing key: {key}, value: {value}, is_missing: {self.is_missing_data.get(key)}")
                 self.is_missing_data[key] = missing_checker(value)
             
             if self.show_chart == False:

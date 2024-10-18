@@ -46,11 +46,7 @@ class CSVProcessor:
     missing_main_measure : bool
         主要な指標が欠落しているかどうかを示すフラグ。
     data : dict
-        データ項目の辞書。各キーはデータ項目名であり、値はリストです。
-        リストの各要素は以下の通りです:
-        - データ項目名 (str)
-        - データ (int/float)
-        - 単位 (str)
+        データ項目の辞書。各キーはデータ項目名であり、値はDataItemオブジェクト.
     """
     def __init__(self, file_path: str):
         self.data = {
@@ -486,6 +482,10 @@ def main():
     missing_GAAP = []
     missing_main_measure = []
     for file_path in paths:
+        if config["process_unprocessed_csv_only"]:
+            if not file_path.startswith('CSVs/jpcrp030000'):
+                print(f'処理対象外のCSVファイルです: {file_path}')
+                continue
         processor = CSVProcessor(file_path)
         processor.load_csv()
         processor.process_data()
