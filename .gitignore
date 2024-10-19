@@ -169,6 +169,7 @@ json_file/*.json
 
 # test file
 test.py
+test.json
 
 # ZIPsディレクトリ内の全てのファイルを無視
 ZIPs/*
