@@ -1,21 +1,18 @@
 import os
 import matplotlib.pyplot as plt
-from flask import session
-import uuid
 
 class PlotSaver:
-    def __init__(self, show_chart=True):
+    def __init__(self, session_dir, show_chart=True):
+        self.session_dir = session_dir
         self.show_chart = show_chart
 
     def save_plots(self, plots):
-        session_id = session.get('session_id', str(uuid.uuid4()))
-        session['session_id'] = session_id
-
         plot_paths = []
         for i, plot in enumerate(plots):
-            plot: plt
-            plot_path = os.path.join('web_app', 'static', 'plots', f'{session_id}_plot_{i}.png')
-            plot.savefig(plot_path)
+            plot_path = os.path.join(self.session_dir, f'plot_{i}.png')
+            plot.save_fig=True
+            plot.save_path=plot_path
+            fig = plot.plot()
             plot_paths.append(plot_path)
             print(f"Plot saved to {plot_path}")
 
@@ -33,3 +30,7 @@ class PlotSaver:
             if os.path.exists(plot_path):
                 os.remove(plot_path)
                 print(f"Plot removed from {plot_path}")
+        # セッションディレクトリを削除
+        if os.path.exists(self.session_dir):
+            os.rmdir(self.session_dir)
+            print(f"Directory removed: {self.session_dir}")

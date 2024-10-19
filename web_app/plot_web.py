@@ -75,13 +75,15 @@ class Barchart():
         棒グラフを生成して表示する。
     """
 
-    def __init__(self, json_file_path: str, show_chart: bool) -> None:
+    def __init__(self, json_file_path: str, show_chart: bool,
+                 save_fig=True, save_path='') -> None:
         self.json_file_path = json_file_path
         self.data = self.reading_json(json_file_path)
         self.is_missing_data = self.check_missing_data()
         self.show_chart = show_chart
         self.isIFRS = True if isIFRS(self.data) else False
-
+        self.save_fig = save_fig
+        self.save_path = save_path
 
 
     def reading_json(self, json_file_path: str) -> Dict[str, DataItem]:
@@ -258,6 +260,10 @@ class Barchart():
 
             # y軸のグリッドラインを追加
             ax.yaxis.grid(True, linestyle='--', color='gray', alpha=0.7)
+            
+            if True:
+                plt.savefig(self.save_path)
+                print(f"(in plot_web): Plot saved to {self.save_path}")
 
             return fig
         else:
@@ -389,5 +395,8 @@ class Barchart():
 
             # y軸のグリッドラインを追加
             ax.yaxis.grid(True, linestyle='--', color='gray', alpha=0.7)
+
+            if self.save_fig:
+                plt.savefig(self.save_path)
 
             return fig

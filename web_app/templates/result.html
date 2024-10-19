@@ -9,9 +9,9 @@
     <div class="container">
         <h1>Plot Result</h1>
         <div id="plot">
-            <img src="{{ url_for('plot', filename=session['session_id'] + '_plot_0.png') }}" alt="Generated Plot">
+            <img src="{{ url_for('plot', session_id=session_id, filename='plot_0.png') }}" alt="Generated Plot">
         </div>
-        <a href="{{ url_for('cleanup') }}" class="button">Go Back</a>
+        <a href="{{ url_for('cleanup', session_id=session_id) }}" class="button">Go Back</a>
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <ul class="flashes">

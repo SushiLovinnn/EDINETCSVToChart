@@ -6,3 +6,4 @@ edinet_wrap==v0.13
 requests
 python-dotenv
 plotly
+APScheduler

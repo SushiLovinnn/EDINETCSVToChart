@@ -179,6 +179,9 @@ ZIPs/*
 CSVs/*
 !CSVs/.gitkeep
 
+# static/plotsディレクトリ内の全てのファイルを無視
+static/plots/*
+
 .DS_Store
 
 # pngファイルを無視
