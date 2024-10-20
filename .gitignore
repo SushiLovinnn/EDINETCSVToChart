@@ -169,6 +169,7 @@ json_file/*.json
 
 # test file
 test.py
+test.json
 
 # ZIPsディレクトリ内の全てのファイルを無視
 ZIPs/*
@@ -177,6 +178,9 @@ ZIPs/*
 # CSVsディレクトリ内の全てのファイルを無視
 CSVs/*
 !CSVs/.gitkeep
+
+# web_app/static/plotsディレクトリ内の全てのファイルを無視
+web_app/static/plots/*
 
 .DS_Store
 

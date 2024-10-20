@@ -1,5 +1,4 @@
 from edinet_data_fetcher import EdinetDataFetcher
-from main import main
 import time
 from datetime import datetime
 import requests
@@ -12,12 +11,12 @@ def is_valid_date(year, month, day):
         return False
 
 year = 2024
-day_from = (3, 29)
+day_from = (4, 1)
 day_to = (4, 10) #半開区間で指定. 3/22から3/31まで取得する場合は(3, 32)とする.
 fetch_flag = False
 
-for month in range(3, 4):
-    for day in range(22, 32):
+for month in range(1, 13):
+    for day in range(1, 32):
         if (month, day) == day_from:
             fetch_flag = True
         if (month, day) == day_to:
@@ -27,8 +26,8 @@ for month in range(3, 4):
 
         time.sleep(1)  # リクエストの間隔は1秒.
         print("--------------------")
-        print(f"Fetching data for 2024-{month:02d}-{day:02d}")
-        date = f"2024-{month:02d}-{day:02d}"
+        print(f"Fetching data for {year}-{month:02d}-{day:02d}")
+        date = f"{year}-{month:02d}-{day:02d}"
         fetcher = EdinetDataFetcher(date)
         
         retries = 3
@@ -51,5 +50,3 @@ for month in range(3, 4):
             print(f"Failed to fetch data for {date} after {retries} attempts")
             raise requests.exceptions.ConnectionError
                         
-
-main()

@@ -2,7 +2,8 @@ Flask
 pandas
 matplotlib
 matplotlib_fontja
-edinet_wrap
+edinet_wrap==v0.13
 requests
 python-dotenv
 plotly
+APScheduler

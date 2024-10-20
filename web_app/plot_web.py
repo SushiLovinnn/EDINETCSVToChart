@@ -3,8 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 import matplotlib_fontja
 import matplotlib.ticker as ticker
-from main import isIFRS
-
+from typing import Dict
 
 matplotlib.use('Agg')
 
@@ -30,7 +29,26 @@ class DataItem:
 
     def __str__(self):
         return f'{self.name}: {self.value} {self.unit}'
-    
+
+def isIFRS(data: Dict[str, DataItem]) -> bool:
+        """
+        会社のデータがIFRS基準かどうかを判定する関数
+
+        data : Dict[str, DataItem]
+        ----------
+        data : DataItem
+            有報から抽出したデータを格納した辞書
+
+        Returns
+        -------
+        bool
+            IFRS基準の要素が一つでも格納されていればTrue、そうでなければFalse
+        """
+        for key, val in data.items():
+            if val.ifrs_flag and val.value != -1:
+                return True
+
+        return False
 
 class Barchart():
     """
@@ -57,14 +75,16 @@ class Barchart():
         棒グラフを生成して表示する。
     """
 
-    def __init__(self, json_file_path: str, show_chart: bool) -> None:
+    def __init__(self, json_file_path: str, show_chart: bool,
+                 save_fig=True, save_path='') -> None:
         self.json_file_path = json_file_path
-        self.is_missing_data = {}
-        self.show_chart = show_chart
         self.data = self.reading_json(json_file_path)
+        self.is_missing_data = self.check_missing_data()
+        self.show_chart = show_chart
         self.isIFRS = True if isIFRS(self.data) else False
+        self.save_fig = save_fig
+        self.save_path = save_path
 
-    from typing import Dict
 
     def reading_json(self, json_file_path: str) -> Dict[str, DataItem]:
         """
@@ -88,6 +108,13 @@ class Barchart():
                                  unit=value['unit'], ifrs_flag=value['ifrs_flag'])
         return data
     
+    
+    def check_missing_data(self) -> Dict[str, bool]:
+            is_missing_data = {}
+            for key, value in self.data.items():
+                is_missing_data[key] = value.value == -1
+        
+            return is_missing_data
 
 
     def plot(self) -> None:
@@ -101,20 +128,7 @@ class Barchart():
             """
             return f'{y * 1e-8:,.0f}億円'
         
-        def missing_checker(data: DataItem) -> bool:
-            """
-            指定されたデータ項目が欠損しているかどうかをチェックします。
-
-            Args:
-                data (DataItem): チェック対象のデータ項目。
-
-            Returns:
-                bool: データ項目が欠損値（値が-1）である場合はTrue、それ以外の場合はFalse。
-            """
-            if data.value == -1:
-                return True
-            else:
-                return False
+        
         # figとaxオブジェクトを作成.
         fig, ax = plt.subplots(figsize=(9, 7))
         # y軸にフォーマッターを適用.
@@ -139,9 +153,6 @@ class Barchart():
                 'IFRSNetIncome': '#f63ad6'
                 }
 
-            for key, value in self.data.items():
-                print(f"Processing key: {key}, value: {value}, is_missing: {self.is_missing_data.get(key)}")
-                self.is_missing_data[key] = missing_checker(value)
             
             if self.show_chart == False:
                 return
@@ -249,9 +260,12 @@ class Barchart():
 
             # y軸のグリッドラインを追加
             ax.yaxis.grid(True, linestyle='--', color='gray', alpha=0.7)
+            
+            if True:
+                plt.savefig(self.save_path)
+                print(f"(in plot_web): Plot saved to {self.save_path}")
 
-            # グラフを保存.
-            plt.savefig('plot.png')
+            return fig
         else:
                 # 色の指定.
             colors = {
@@ -269,8 +283,6 @@ class Barchart():
                 'NetIncome': '#f63ad6'
                 }
             
-            for key, value in self.data.items():
-                self.is_missing_data[key] = missing_checker(value)
             
             if self.show_chart == False:
                 return
@@ -384,5 +396,7 @@ class Barchart():
             # y軸のグリッドラインを追加
             ax.yaxis.grid(True, linestyle='--', color='gray', alpha=0.7)
 
-            # グラフを保存.
-            plt.savefig('plot.png')
+            if self.save_fig:
+                plt.savefig(self.save_path)
+
+            return fig
