@@ -3,6 +3,7 @@ import time
 from datetime import datetime
 import requests
 
+
 def is_valid_date(year, month, day):
     try:
         datetime(year, month, day)
@@ -10,9 +11,9 @@ def is_valid_date(year, month, day):
     except ValueError:
         return False
 
-year = 2024
-day_from = (4, 1)
-day_to = (4, 10) #半開区間で指定. 3/22から3/31まで取得する場合は(3, 32)とする.
+year = 2023
+day_from = (3, 26)
+day_to = (3, 32) #半開区間で指定. 3/22から3/31まで取得する場合は(3, 32)とする.
 fetch_flag = False
 
 for month in range(1, 13):
@@ -49,4 +50,3 @@ for month in range(1, 13):
         if connected_flag == False:
             print(f"Failed to fetch data for {date} after {retries} attempts")
             raise requests.exceptions.ConnectionError
-                        
