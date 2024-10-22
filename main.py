@@ -3,8 +3,8 @@ import zipfile
 import shutil
 import json
 import pandas as pd
+from typing import Dict
 from plot import Barchart
-
 
 
 class DataItem:
@@ -49,6 +49,7 @@ class CSVProcessor:
         データ項目の辞書。各キーはデータ項目名であり、値はDataItemオブジェクト.
     """
     def __init__(self, file_path: str):
+        self.secCode = file_path.split('_')[-1][:-4]
         self.data = {
             'CompanyName': DataItem('会社名', -1, '単位', 0),
             'IFRSSales': DataItem('売上収益(IFRS)', -1, '単位', 1),
@@ -76,6 +77,7 @@ class CSVProcessor:
             'Interest-bearingCurrentLiabilities': DataItem('有利子流動負債', -1, '単位', 0),
             'IFRSInterest-bearingNonCurrentLiabilities': DataItem('有利子固定負債(IFRS)', -1, '単位', 1),
             'Interest-bearingNonCurrentLiabilities': DataItem('有利子固定負債', -1, '単位', 0),
+            'secCode': DataItem('secCode', -1 if self.secCode == None else self.secCode, '単位', 0)
         }
         ### 会社情報の要素IDとコンテキストID
         self.CompanyName_IDs = (
@@ -207,6 +209,7 @@ class CSVProcessor:
     def load_csv(self):
         try:
             self.df = pd.read_csv(self.file_path, encoding='utf-16le', delimiter='\t')
+            self.secCode = self.file_path
         except Exception as e:
             print(f"読み込みエラー: {e}")
             exit()
@@ -268,7 +271,23 @@ class CSVProcessor:
         json_dir = os.path.dirname(self.json_file_path)
         if not os.path.exists(json_dir):
             os.makedirs(json_dir)
-            
+        if not os.path.exists('file_path_by_secCode.json'):
+            # debug
+            print('file_path_by_secCode.jsonが存在しません。')
+            with open('file_path_by_secCode.json', 'w') as f:
+                json.dump({self.data["secCode"].value: [self.json_file_path]}, f, ensure_ascii=False, indent=4)
+        else:
+            # debug
+            print('file_path_by_secCode.jsonが存在します。')
+            with open('file_path_by_secCode.json', 'r') as f:
+                data = json.load(f)
+            if self.data["secCode"].value in data.keys():
+                data[self.data["secCode"].value].append(self.json_file_path)
+                data[self.data["secCode"].value] = list(set(data[self.data["secCode"].value]))
+            else:
+                data[self.data["secCode"].value] = [self.json_file_path]
+            with open('file_path_by_secCode.json', 'w') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
         try:
             with open(self.json_file_path, 'w', encoding='utf-8') as json_file:
                 json.dump(self.data_to_json, json_file, ensure_ascii=False, indent=4)
@@ -377,7 +396,7 @@ def check_missing_data(converter: CSVProcessor, is_missing_data: dict, isIFRS: b
                 elif key in supplementary_measures:
                     print(f'補完的な指標である{converter.data[key].name}が見つかりませんでした。')
 
-def extract_target_csv(zip_folder_path: str, extract_to: str) -> None:
+def extract_target_csv(zip_folder_path: str, extract_to: str):
     """
     ZIPファイルから目的のCSVファイルを抽出し、抽出後にZIPファイルを削除します。
     
@@ -431,11 +450,12 @@ def extract_target_csv(zip_folder_path: str, extract_to: str) -> None:
                 # 抽出されたCSVファイルを指定のディレクトリに保存
                 with zip_ref.open(target_csv_file) as source_file:
                     # 保存するファイル名はパス部分を削除したもの
-                    output_file_path = os.path.join(extract_to, os.path.basename(target_csv_file))
+                    secCode = os.path.basename(zip_path).split('_')[1].split('.')[0]
+                    output_file_path = os.path.join(extract_to, f'{os.path.basename(target_csv_file)[:-4]}_{secCode}.csv')
                     with open(output_file_path, 'wb') as output_file:
                         shutil.copyfileobj(source_file, output_file)
                 
-                print(f"{target_csv_file} を {extract_to} に抽出しました。")
+                print(f"{target_csv_file} を {output_file_path} に抽出しました。")
         
         # ZIPファイルを削除
         try:
@@ -443,8 +463,6 @@ def extract_target_csv(zip_folder_path: str, extract_to: str) -> None:
             print(f"ZIPファイルを削除しました: {zip_path}")
         except Exception as e:
             print(f"ZIPファイルの削除に失敗しました: {zip_path} - {e}")
-
-from typing import Dict
 
 def isIFRS(data: Dict[str, DataItem]) -> bool:
     """
@@ -473,6 +491,8 @@ def main():
     folder_path = 'CSVs'
     extract_target_csv('ZIPs', folder_path)
     paths = find_csv_files_in_folder(folder_path)
+    if config["process_unprocessed_csv_only"] and paths:
+        print('未処理のCSVファイルのみを処理します。')    
     if config["select_data"] == True:
         paths = [input("CSV file path: ")]
         
@@ -484,7 +504,6 @@ def main():
     for file_path in paths:
         if config["process_unprocessed_csv_only"]:
             if not file_path.startswith('CSVs/jpcrp030000'):
-                print(f'処理対象外のCSVファイルです: {file_path}')
                 continue
         processor = CSVProcessor(file_path)
         processor.load_csv()

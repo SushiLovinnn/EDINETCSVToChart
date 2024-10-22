@@ -146,10 +146,10 @@ class EdinetDataFetcher():
                 csvFlag=document["csvFlag"],
                 legalStatus=document["legalStatus"]
             )
-            #書類がCSVファイルで、縦覧可能で、有価証券報告書で、ファンドでない場合にcsvファイルを取得.
-            if doc.csvFlag == '1' and doc.legalStatus == '1' and doc.docTypeCode == "120" and doc.fundCode is None:
+            #書類がCSVファイルで、縦覧可能で、有価証券報告書で、ファンドでなく上場している場合にcsvファイルを取得.
+            if doc.csvFlag == '1' and doc.legalStatus == '1' and doc.docTypeCode == "120"and doc.fundCode is None and doc.secCode is not None:
                 print(doc)
                 doc_data = edn.get_document(doc.docID, 5)
-                with open(f"ZIPs/{doc.docID}.zip", "wb") as f:
+                with open(f"ZIPs/{doc.docID}_{doc.secCode}.zip", "wb") as f:
                     f.write(doc_data)
                 time.sleep(self.sleep_time)

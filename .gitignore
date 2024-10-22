@@ -167,6 +167,8 @@ cython_debug/
 # json_fileディレクトリ内の全てのjsonファイルを無視
 json_file/*.json
 
+file_path_by_secCode.json
+
 # test file
 test.py
 test.json
@@ -182,7 +184,5 @@ CSVs/*
 # web_app/static/plotsディレクトリ内の全てのファイルを無視
 web_app/static/plots/*
 
-.DS_Store
 
-# pngファイルを無視
-*.png
+.DS_Store
