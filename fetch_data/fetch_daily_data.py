@@ -1,4 +1,4 @@
-#! pass to your python interpreter
+#!/usr/bin/env python3
 
 from edinet_data_fetcher import EdinetDataFetcher
 
