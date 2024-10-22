@@ -184,7 +184,5 @@ CSVs/*
 # web_app/static/plotsディレクトリ内の全てのファイルを無視
 web_app/static/plots/*
 
-.DS_Store
 
-# pngファイルを無視
-*.png
+.DS_Store
